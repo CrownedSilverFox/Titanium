@@ -1,0 +1,32 @@
+td {
+    border: 1px solid black;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+   }
+
+.circle{
+    width: 40px;
+    /*visibility: hidden;*/
+}
+#test{
+    visibility: hidden;
+}
+table {
+    width: 100%;
+    border-spacing: 0;
+}
+.board{
+    border: 2px solid red;
+    float: left;
+}
+.questions{
+    border: 2px solid green;
+    float: right;
+    width: 400px;
+    height: 400px;
+}
+.answer_choice{
+    border: 2px solid #287980;
+}
+
