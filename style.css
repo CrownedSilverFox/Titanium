@@ -4,29 +4,28 @@ td {
     height: 40px;
     padding: 0;
    }
-
 .circle{
     width: 40px;
-    /*visibility: hidden;*/
-}
-#test{
-    visibility: hidden;
+    height: 40px;
+    padding: 0;
 }
 table {
     width: 100%;
     border-spacing: 0;
 }
 .board{
-    border: 2px solid red;
+    border: 2px solid black;
     float: left;
 }
 .questions{
-    border: 2px solid green;
+    border: 2px solid black;
     float: right;
-    width: 400px;
-    height: 400px;
 }
 .answer_choice{
-    border: 2px solid #287980;
+    border: 2px solid black;
+}
+
+.magic{
+    clear: both;
 }
 

@@ -16,3 +16,7 @@ div.left, div.right{
 .w{
     clear: both;
 }
+
+.block{
+    background-color: aquamarine;
+}
