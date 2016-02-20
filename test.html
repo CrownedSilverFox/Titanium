@@ -4,163 +4,83 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="style.css">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="static/scripts/scripts.js"></script>
 </head>
 <body>
 <div class="block">
     <div class="board">
-        <table>
-            <tr>
-                <td><img class="circle" src="http://www.anchorbyte.com/inkfish/images/circle-red.png"></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-        </tr>
+        <table id="board1">
         </table>
+    </div>
+    <div class="Question">
+        <div id="name">
+            Unknown
+        </div>
     </div>
     <div class="questions">
         <table>
             <tr>
-                <td><button>Вопрос-1</button></td>
-                <td><button>Вопрос-2</button></td>
-                <td><button>Вопрос-3</button></td>
-                <td><button>Вопрос-4</button></td>
+                <td>
+                    <button onclick="on_click('1')">Вопрос-1</button>
+                </td>
+                <td>
+                    <button onclick="on_click('2')">Вопрос-2</button>
+                </td>
+                <td>
+                    <button>Вопрос-3</button>
+                </td>
+                <td>
+                    <button>Вопрос-4</button>
+                </td>
             </tr>
             <tr>
-                <td><button>Вопрос-1</button></td>
-                <td><button>Вопрос-2</button></td>
-                <td><button>Вопрос-3</button></td>
-                <td><button>Вопрос-4</button></td>
+                <td>
+                    <button>Вопрос-1</button>
+                </td>
+                <td>
+                    <button>Вопрос-2</button>
+                </td>
+                <td>
+                    <button>Вопрос-3</button>
+                </td>
+                <td>
+                    <button>Вопрос-4</button>
+                </td>
             </tr>
             <tr>
-                <td><button>Вопрос-1</button></td>
-                <td><button>Вопрос-2</button></td>
-                <td><button>Вопрос-3</button></td>
-                <td><button>Вопрос-4</button></td>
+                <td>
+                    <button>Вопрос-1</button>
+                </td>
+                <td>
+                    <button>Вопрос-2</button>
+                </td>
+                <td>
+                    <button>Вопрос-3</button>
+                </td>
+                <td>
+                    <button>Вопрос-4</button>
+                </td>
             </tr>
             <tr>
-                <td><button>Вопрос-1</button></td>
-                <td><button>Вопрос-2</button></td>
-                <td><button>Вопрос-3</button></td>
-                <td><button>Вопрос-4</button></td>
+                <td>
+                    <button>Вопрос-1</button>
+                </td>
+                <td>
+                    <button>Вопрос-2</button>
+                </td>
+                <td>
+                    <button>Вопрос-3</button>
+                </td>
+                <td>
+                    <button>Вопрос-4</button>
+                </td>
             </tr>
         </table>
     </div>
-    </div>
-    <div class="magic"></div>
+</div>
+<div class="magic"></div>
 </div>
 <div class="block">
     <div class="answer_choice" align="center">
