@@ -3,7 +3,8 @@ var yellow_num = 0;
 var blue_num = 0;
 var green_num = 0;
 var yellow_src = 'http://www.komus.ru/photo/_full/331966_1.jpg';
-var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca070517c6.png'
+var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca070517c6.png';
+var TEAM = "red";
 
 $(document).ready(function () {
     load_table();
@@ -42,13 +43,20 @@ function load_table() {
 }
 
 function on_click(who) {
-    $('#name').html('petya')
+    var student = {name: "Vasya"};
+    $.post("http://localhost:8000/test", JSON.stringify(student),
+        function (data, status) {
+            console.log(data);
+            console.log(status);
+        });
+
 }
 
 function on_table_click(id) {
-    var td = $('#'+id);
-    var img =  $('<img />', {src: yellow_src});
+    var td = $('#' + id);
+    var img = $('<img />', {src: yellow_src});
     td.html(img);
     yellow_num++;
-    console.log(''+yellow_num+':'+red_num)
+    red_num--;
+    console.log('' + yellow_num + ':' + red_num)
 }
