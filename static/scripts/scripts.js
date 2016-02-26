@@ -7,10 +7,11 @@ var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca0705
 var TEAM = "red";
 
 $(document).ready(function () {
-    load_table();
+    load_desk();
+    load_questions();
 });
 
-function load_table() {
+function load_desk() {
     var table = $('#board1');
     var onclick1 = "on_table_click(id)";
     for (var i = 0; i < 10; i++) {
@@ -41,15 +42,32 @@ function load_table() {
         table.append(tr)
     }
 }
+function load_questions() {
+    var table = $('#questions');
+    var onclick = "on_question_click(id)";
+    var json = $.getJSON("data/questions.json");
+    console.log(json);
+    for (var i = 0; i < 4; i++) {
+        var tr = $(document.createElement('tr'));
+        for (var j = 0; j < 4; j++) {
+            var td = $(document.createElement('td'));
+            var button = $('<button />', {text: 'Вопрос' + (j + 1)});
+            button.attr('id', ('2_' + i) + ('_' + j));
+            td.append(button);
+            tr.append(td);
+            button.attr('onclick', onclick)
+        }
+        table.append(tr)
+    }
+}
 
-function on_click(who) {
+function on_question_click(id) {
     var student = {name: "Vasya"};
     $.post("http://localhost:8000/test", JSON.stringify(student),
         function (data, status) {
             console.log(data);
             console.log(status);
         });
-
 }
 
 function on_table_click(id) {
