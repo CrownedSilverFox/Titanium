@@ -1,26 +1,26 @@
 {
   "quest-group-1": [
-    {"text": "text", "cost": "2", "answers": ["1", "2", "3", "4"], "id": 1},
-    {"text": "text", "cost": "4", "answers": ["1", "2", "3", "4"], "id": 2},
-    {"text": "text", "cost": "6", "answers": ["1", "2", "3", "4"], "id": 3},
-    {"text": "text", "cost": "8", "answers": ["1", "2", "3", "4"], "id": 4}
+    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "id": 1},
+    {"cost": "4", "answers": ["1", "2", "3", "4"], "id": 2},
+    {"cost": "6", "answers": ["1", "2", "3", "4"], "id": 3},
+    {"cost": "8", "answers": ["1", "2", "3", "4"], "id": 4}
   ],
   "quest-group-2": [
-    {"text": "text", "cost": "2", "answers": ["1", "2", "3", "4"], "id": 5},
-    {"text": "text", "cost": "4", "answers": ["1", "2", "3", "4"], "id": 6},
-    {"text": "text", "cost": "6", "answers": ["1", "2", "3", "4"], "id": 7},
-    {"text": "text", "cost": "8", "answers": ["1", "2", "3", "4"], "id": 8}
+    {"cost": "2", "answers": ["1", "2", "3", "4"], "id": 5},
+    {"cost": "4", "answers": ["1", "2", "3", "4"], "id": 6},
+    {"cost": "6", "answers": ["1", "2", "3", "4"], "id": 7},
+    {"cost": "8", "answers": ["1", "2", "3", "4"], "id": 8}
   ],
   "quest-group-3": [
-    {"text": "text", "cost": "2", "answers": ["1", "2", "3", "4"], "id": 9},
-    {"text": "text", "cost": "4", "answers": ["1", "2", "3", "4"], "id": 10},
-    {"text": "text", "cost": "6", "answers": ["1", "2", "3", "4"], "id": 11},
-    {"text": "text", "cost": "8", "answers": ["1", "2", "3", "4"], "id": 12}
+    {"cost": "2", "answers": ["1", "2", "3", "4"], "id": 9},
+    {"cost": "4", "answers": ["1", "2", "3", "4"], "id": 10},
+    {"cost": "6", "answers": ["1", "2", "3", "4"], "id": 11},
+    {"cost": "8", "answers": ["1", "2", "3", "4"], "id": 12}
   ],
   "quest-group-4": [
-    {"text": "text", "cost": "2", "answers": ["1", "2", "3", "4"], "id": 13},
-    {"text": "text", "cost": "4", "answers": ["1", "2", "3", "4"], "id": 14},
-    {"text": "text", "cost": "6", "answers": ["1", "2", "3", "4"], "id": 15},
-    {"text": "text", "cost": "8", "answers": ["1", "2", "3", "4"], "id": 16}
+    {"cost": "2", "answers": ["1", "2", "3", "4"], "id": 13},
+    {"cost": "4", "answers": ["1", "2", "3", "4"], "id": 14},
+    {"cost": "6", "answers": ["1", "2", "3", "4"], "id": 15},
+    {"cost": "8", "answers": ["1", "2", "3", "4"], "id": 16}
   ]
 }
