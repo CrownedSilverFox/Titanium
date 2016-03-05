@@ -21,7 +21,7 @@ table {
     border: 2px solid black;
     float: right;
 }
-.answer_choice{
+#answer_choice{
     border: 2px solid black;
 }
 

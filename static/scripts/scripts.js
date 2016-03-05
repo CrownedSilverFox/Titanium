@@ -6,10 +6,12 @@ var yellow_src = 'http://www.komus.ru/photo/_full/331966_1.jpg';
 var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca070517c6.png';
 var TEAM = "red";
 var questData;
+var answData;
 
 $(document).ready(function () {
     load_desk();
-    load_questions();
+    $.getJSON("data/questions.json", onDataLoad);
+    $.getJSON("data/right_answers.json", function (data) {answData = data});
 });
 
 function load_desk() {
@@ -62,23 +64,36 @@ function onDataLoad(data){
     }
 }
 
-function load_questions() {
-    $.getJSON("data/questions.json", onDataLoad)
-}
-
 function on_question_click(id) {
     var answBlock = $("#answer_choice");
+    var questBlock = $("#Question");
     answBlock.empty();
+    questBlock.empty();
     for (var key in questData) {
         for (var i = 0; i < questData[key].length; i++) {
             if (id == questData[key][i].id) {
+                var question = '<label>' + questData[key][i].text + '</label>';
+                questBlock.append(question);
                 for (var j = 0; j < (questData[key][i]["answers"]).length; j++) {
-                    var line = '<input type="radio" id="'+ j + '' + questData[key][i].id +'"><label>'
+                    var line = '<input type="radio" id="'+ (j+1) + '' + questData[key][i].id
+                        + '" onclick=on_answer_click(id)' + ' name="answChoice"' + '><label>'
                         + questData[key][i]["answers"][j] +'</label><br>';
                     answBlock.append(line);
-                    //var radio = $('<input />', {type: 'radio', id: 'q' + id})
-
                 }
+            }
+        }
+    }
+}
+
+function on_answer_click(id) {
+    var answLog = $('#answerLog');
+    answLog.empty();
+    for (var i = 0; i < answData.length; i++) {
+        if (answData[i].id == id.slice(1)) {
+            if (answData[i]["right_answer_num"] == id[0]) {
+                answLog.append('<label>Yes</label>')
+            } else {
+                answLog.append('<label>No</label>')
             }
         }
     }
@@ -87,8 +102,6 @@ function on_question_click(id) {
 function on_table_click(id) {
     var td = $('#' + id);
     var img = $('<img />', {src: yellow_src});
-    td.html(img);
-    yellow_num++;
-    red_num--;
-    console.log('' + yellow_num + ':' + red_num)
+    td.empty();
+    td.append(img);
 }

@@ -33,10 +33,10 @@ class BaseHandler(tornado.web.RequestHandler):
         self.current_user = user
         raise gen.Return(user)
 
-
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "http://localhost:63342")
         self.set_header("Access-Control-Allow-Credentials", "true")
         self.set_header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
         self.set_header("Access-Control-Allow-Headers",
-            "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, X-Requested-By, If-Modified-Since, X-File-Name, Cache-Control")
+                        "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, X-Requested-By,"
+                        " If-Modified-Since, X-File-Name, Cache-Control")
