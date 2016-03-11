@@ -86,17 +86,14 @@ function on_question_click(id) {
 }
 
 function on_answer_click(id) {
+    var out = {};
     var answLog = $('#answerLog');
     answLog.empty();
-    for (var i = 0; i < answData.length; i++) {
-        if (answData[i].id == id.slice(1)) {
-            if (answData[i]["right_answer_num"] == id[0]) {
-                answLog.append('<label>Yes</label>')
-            } else {
-                answLog.append('<label>No</label>')
-            }
-        }
-    }
+    out.id = id.slice(1);
+    out.answer = id[0];
+    $.post('http://localhost:8000/answer', JSON.stringify(out), function(data) {
+        console.log(data)
+    })
 }
 
 function on_table_click(id) {
