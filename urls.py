@@ -8,6 +8,6 @@ from answer.handlers import AnswerHandler
 url_patterns = [
     # test
     url(r"/test", TestHandler),
-    # url(r"/users/", RegisterHandler),
+    url(r"/register/", RegisterHandler),
     url(r"/answer", AnswerHandler)
 ]

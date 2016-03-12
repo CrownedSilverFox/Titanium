@@ -1,6 +1,7 @@
 from base.handlers import BaseHandler
 import json
 
+
 class AnswerHandler(BaseHandler):
     def post(self, *args, **kwargs):
         answer = self.json

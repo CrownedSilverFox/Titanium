@@ -7,8 +7,16 @@ var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca0705
 var TEAM = "red";
 var questData;
 var answData;
+var PLAYERSWAITING = 0;
+var YOURTURN = 1;
+var SMBTURN = 2;
+var YOURCHOICE = 3;
+var SMBCHOICE = 4;
+var DESKCHOICE = 5;
+var active_stage = PLAYERSWAITING;
 
 $(document).ready(function () {
+    //$.post('localhost:8000/register', register(data));
     load_desk();
     $.getJSON("data/questions.json", onDataLoad);
     $.getJSON("data/right_answers.json", function (data) {answData = data});
@@ -101,4 +109,8 @@ function on_table_click(id) {
     var img = $('<img />', {src: yellow_src});
     td.empty();
     td.append(img);
+}
+
+function register(data) {
+
 }
