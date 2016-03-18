@@ -8,6 +8,7 @@ from tornado.options import options
 from settings import settings, MONGO_DB
 from urls import url_patterns
 from utils.db import connect_mongo
+import json
 
 
 class ACLApp(tornado.web.Application):
@@ -22,6 +23,11 @@ def main():
     http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
+
+
+with open('local/current_game_set.json', 'w') as current:
+        with open('static/data/default_game_set.json') as default:
+            current.write(json.dumps(json.load(default)))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
 # states
-PLAYERSWAITING = 0
 red_answer_choice = 'red_a'
 yellow_answer_choice = 'yellow_a'
 blue_answer_choice = 'blue_a'
@@ -8,7 +7,6 @@ red_points_allocation = 'red_p'
 yellow_points_allocation = 'yellow_p'
 blue_points_allocation = 'blue_p'
 green_points_allocation = 'green_p'
-answer_choice = 1
 # teams
 teams = ['red',
          'yellow',

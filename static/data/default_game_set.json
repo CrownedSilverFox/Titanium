@@ -3,4 +3,4 @@
  "yellow_team_points": 25,
  "blue_team_points": 25,
  "green_team_points": 25,
- "current_game_state": 0}
+ "current_game_state": "players_waiting"}

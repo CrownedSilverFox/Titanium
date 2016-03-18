@@ -4,22 +4,23 @@ var blue_num = 0;
 var green_num = 0;
 var yellow_src = 'http://www.komus.ru/photo/_full/331966_1.jpg';
 var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca070517c6.png';
-var TEAM = "red";
+var team;
 var questData;
-var answData;
-var PLAYERSWAITING = 0;
-var YOURTURN = 1;
-var SMBTURN = 2;
-var YOURCHOICE = 3;
-var SMBCHOICE = 4;
-var DESKCHOICE = 5;
-var active_stage = PLAYERSWAITING;
+var status;
 
 $(document).ready(function () {
-    //$.post('localhost:8000/register', register(data));
+    $.post('http://localhost:8000/register', function (data) {
+        console.log(data);
+        if (data != 'GAME_FULL') {
+            team = data;
+        } else {
+            status = data
+        }
+        console.log(team)
+    });
     load_desk();
     $.getJSON("data/questions.json", onDataLoad);
-    $.getJSON("data/right_answers.json", function (data) {answData = data});
+    setTimeout(change_status(), 1000)
 });
 
 function load_desk() {
@@ -111,6 +112,20 @@ function on_table_click(id) {
     td.append(img);
 }
 
-function register(data) {
-
+function change_status() {
+    setInterval(function () {
+        if (status != 'GAME_FULL') {
+            $.post('http://localhost:8000/status', function (data) {
+                status = data
+            });
+        }
+        if (status.indexOf(team) > -1) {
+                $('.block').show();
+            } else {
+                $('.block').hide();
+            }
+            var status_block = $('#status');
+            status_block.empty();
+            status_block.append("<label>" + status + "</label>");
+    }, 500)
 }
