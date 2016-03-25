@@ -6,7 +6,7 @@ var yellow_src = 'http://www.komus.ru/photo/_full/331966_1.jpg';
 var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca070517c6.png';
 var team;
 var questData;
-var status;
+var state = 0;
 
 $(document).ready(function () {
     $.post('http://localhost:8000/register', function (data) {
@@ -14,7 +14,7 @@ $(document).ready(function () {
         if (data != 'GAME_FULL') {
             team = data;
         } else {
-            status = data
+            state = data
         }
         console.log(team)
     });
@@ -73,7 +73,7 @@ function onDataLoad(data){
     }
 }
 
-function on_question_click(id) {
+function on_question_choice(id) {
     var answBlock = $("#answer_choice");
     var questBlock = $("#Question");
     answBlock.empty();
@@ -95,14 +95,16 @@ function on_question_click(id) {
 }
 
 function on_answer_click(id) {
-    var out = {};
-    var answLog = $('#answerLog');
-    answLog.empty();
-    out.id = id.slice(1);
-    out.answer = id[0];
-    $.post('http://localhost:8000/answer', JSON.stringify(out), function(data) {
-        console.log(data)
-    })
+    if (state['status'] == 'answer_c') {
+        var out = {};
+        var answLog = $('#answerLog');
+        answLog.empty();
+        out.id = id.slice(1);
+        out.answer = id[0];
+        $.post('http://localhost:8000/answer', JSON.stringify(out), function (data) {
+            console.log(data)
+        })
+    }
 }
 
 function on_table_click(id) {
@@ -114,18 +116,25 @@ function on_table_click(id) {
 
 function change_status() {
     setInterval(function () {
-        if (status != 'GAME_FULL') {
+        if (state != 'GAME_FULL') {
             $.post('http://localhost:8000/status', function (data) {
-                status = data
+                state = JSON.parse(data);
             });
-        }
-        if (status.indexOf(team) > -1) {
+            if (state && ((state['status'].indexOf(team) > -1) || (state['status'] == 'answer_c'))) {
                 $('.block').show();
             } else {
                 $('.block').hide();
             }
-            var status_block = $('#status');
-            status_block.empty();
-            status_block.append("<label>" + status + "</label>");
+        }
+        var status_block = $('#status');
+        status_block.empty();
+        if (state["players_waiting"] == 0) {
+            status_block.append("<label>" + state['status'] + "</label>");
+        } else {
+            status_block.append("<label>" + state['status'] + " : " + state['players_waiting'] + "</label>");
+        }
     }, 500)
+}
+function on_question_click(id) {
+    $.post('http://localhost:8000/quest');
 }
