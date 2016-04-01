@@ -136,5 +136,7 @@ function change_status() {
     }, 500)
 }
 function on_question_click(id) {
-    $.post('http://localhost:8000/quest');
+    $.post('http://localhost:8000/quest', JSON.stringify(id), function (data){
+        console.log(data)
+    });
 }
