@@ -1,7 +1,9 @@
-{"teams_num": 0,
- "teams_waiting": 4,
+{"players_waiting": 4,
+ "teams_num": 0,
  "red_team_points": 25,
  "yellow_team_points": 25,
  "blue_team_points": 25,
  "green_team_points": 25,
+ "last_player_turn": 3,
+ "current_question_id": 0,
  "current_game_state": "players_waiting"}

@@ -1,10 +1,11 @@
 from base.handlers import BaseHandler
 import json
-from static.data.settings import teams, red_answer_choice
+from static.data.settings import teams, red_question_choice
 
 
 class RegisterHandler(BaseHandler):
     def post(self, *args, **kwargs):
+        # print(kwargs)
         self.set_default_headers()
         with open('local/current_game_set.json') as f:
             game = json.load(f)
@@ -14,6 +15,6 @@ class RegisterHandler(BaseHandler):
         self.write(teams[game['teams_num']])
         game['teams_num'] += 1
         if game['teams_num'] == 4:
-            game['current_game_state'] = red_answer_choice
+            game['current_game_state'] = red_question_choice
         with open('local/current_game_set.json', 'w') as f:
             f.write(json.dumps(game))

@@ -7,6 +7,7 @@ var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca0705
 var team;
 var questData;
 var state = 0;
+var chosenA;
 
 $(document).ready(function () {
     $.post('http://localhost:8000/register', function (data) {
@@ -34,19 +35,15 @@ function load_desk() {
             td.attr('onclick', onclick1);
             if ((i <= 4) && (j <= 4)) {
                 var img = $('<img />', {src: yellow_src});
-                yellow_num++
             }
             if ((i <= 4) && (j > 4)) {
                 var img = $('<img />', {src: red_src});
-                red_num++
             }
             if ((i > 4) && (j <= 4)) {
                 var img = $('<img />', {src: yellow_src});
-                yellow_num++
             }
             if ((i > 4) && (j > 4)) {
                 var img = $('<img />', {src: red_src});
-                red_num++
             }
             td.append(img);
             tr.append(td);
@@ -55,7 +52,7 @@ function load_desk() {
     }
 }
 
-function onDataLoad(data){
+function onDataLoad(data) {
     var table = $('#questions');
     var onclick = "on_question_click(id)";
     questData = data;
@@ -73,37 +70,24 @@ function onDataLoad(data){
     }
 }
 
-function on_question_choice(id) {
+function on_question_choice(quest) {
     var answBlock = $("#answer_choice");
     var questBlock = $("#Question");
     answBlock.empty();
     questBlock.empty();
-    for (var key in questData) {
-        for (var i = 0; i < questData[key].length; i++) {
-            if (id == questData[key][i].id) {
-                var question = '<label>' + questData[key][i].text + '</label>';
-                questBlock.append(question);
-                for (var j = 0; j < (questData[key][i]["answers"]).length; j++) {
-                    var line = '<input type="radio" id="'+ (j+1) + '' + questData[key][i].id
-                        + '" onclick=on_answer_click(id)' + ' name="answChoice"' + '><label>'
-                        + questData[key][i]["answers"][j] +'</label><br>';
-                    answBlock.append(line);
-                }
-            }
-        }
+    var question = '<label>' + quest.text + '</label>';
+    questBlock.append(question);
+    for (var i = 0; i < 4; i++) {
+        var line = '<input type="radio" id="q_a_' + i + '" onclick=on_answer_click(id)'
+            + ' name="answChoice"' + '><label>'
+            + quest["answers"][i] + '</label><br>';
+        answBlock.append(line);
     }
 }
 
 function on_answer_click(id) {
     if (state['status'] == 'answer_c') {
-        var out = {};
-        var answLog = $('#answerLog');
-        answLog.empty();
-        out.id = id.slice(1);
-        out.answer = id[0];
-        $.post('http://localhost:8000/answer', JSON.stringify(out), function (data) {
-            console.log(data)
-        })
+        chosenA = id.slice(-1)
     }
 }
 
@@ -125,6 +109,9 @@ function change_status() {
             } else {
                 $('.block').hide();
             }
+            if (state.status == 'answer_c') {
+                on_question_choice(state.quest)
+            }
         }
         var status_block = $('#status');
         status_block.empty();
@@ -136,7 +123,11 @@ function change_status() {
     }, 500)
 }
 function on_question_click(id) {
-    $.post('http://localhost:8000/quest', JSON.stringify(id), function (data){
+    $.post('http://localhost:8000/quest', JSON.stringify(id), function (data) {
         console.log(data)
     });
+}
+
+function answer_timer(timeLeft) {
+
 }
