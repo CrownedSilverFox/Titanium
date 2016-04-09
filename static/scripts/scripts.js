@@ -1,13 +1,12 @@
-var red_num = 0;
-var yellow_num = 0;
-var blue_num = 0;
-var green_num = 0;
+var points = 0;
 var yellow_src = 'http://www.komus.ru/photo/_full/331966_1.jpg';
 var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca070517c6.png';
 var team;
 var questData;
 var state = 0;
-var chosenA;
+var chosenA = true;
+var timer;
+var time = 1;
 
 $(document).ready(function () {
     $.post('http://localhost:8000/register', function (data) {
@@ -21,7 +20,7 @@ $(document).ready(function () {
     });
     load_desk();
     $.getJSON("data/questions.json", onDataLoad);
-    setTimeout(change_status(), 1000)
+    setTimeout(change_status, 1000);
 });
 
 function load_desk() {
@@ -71,6 +70,7 @@ function onDataLoad(data) {
 }
 
 function on_question_choice(quest) {
+    chosenA = false;
     var answBlock = $("#answer_choice");
     var questBlock = $("#Question");
     answBlock.empty();
@@ -78,17 +78,11 @@ function on_question_choice(quest) {
     var question = '<label>' + quest.text + '</label>';
     questBlock.append(question);
     for (var i = 0; i < 4; i++) {
-        var line = '<input type="radio" id="q_a_' + i + '" onclick=on_answer_click(id)'
-            + ' name="answChoice"' + '><label>'
-            + quest["answers"][i] + '</label><br>';
+        var line = '<input type="radio" name="answChoice"><label>' + quest["answers"][i] + '</label><br>';
         answBlock.append(line);
     }
-}
-
-function on_answer_click(id) {
-    if (state['status'] == 'answer_c') {
-        chosenA = id.slice(-1)
-    }
+    console.log("run timer");
+    timer = setInterval(answer_timer, 1000)
 }
 
 function on_table_click(id) {
@@ -109,8 +103,11 @@ function change_status() {
             } else {
                 $('.block').hide();
             }
-            if (state.status == 'answer_c') {
+            if ((state.status == 'answer_c') && (chosenA)) {
                 on_question_choice(state.quest)
+            }
+            if (state.status != 'answer_c') {
+                chosenA = true
             }
         }
         var status_block = $('#status');
@@ -128,6 +125,32 @@ function on_question_click(id) {
     });
 }
 
-function answer_timer(timeLeft) {
+function answer_timer() {
+    time++;
+    var timeblock = $('#time');
+    timeblock.empty();
+    timeblock.append('<label> Времени на ответ осталось: ' + time + '</label>');
+    if (time == 5) {
+        clearInterval(timer);
+        timeblock.empty();
+        time = 0;
+        var answRadios = document.getElementsByName('answChoice');
+        var answer = {'checkedAnswer': 0};
+        for (var i = 0; i < 4; i++) {
+            if (answRadios[i].checked) {
+                console.log('!!!' + i);
+                answer.checkedAnswer = i+1;
+            }
+        }
+        $.post('http://localhost:8000/answer', JSON.stringify(answer), function (data) {
+            points = JSON.parse(data).points;
+            refreshPoints();
+        })
+    }
+}
 
+function refreshPoints() {
+    var pointsBlock = $('#points');
+    pointsBlock.empty();
+    pointsBlock.append('<label> Ваши очки: ' + points + '</label>')
 }

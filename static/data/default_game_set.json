@@ -6,4 +6,7 @@
  "green_team_points": 25,
  "last_player_turn": 3,
  "current_question_id": 0,
- "current_game_state": "players_waiting"}
+ "current_game_state": "players_waiting",
+ "quest_points": 0,
+ "whose_quest": 0,
+ "whose_points": 0}

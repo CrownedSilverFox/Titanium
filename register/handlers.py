@@ -1,6 +1,6 @@
 from base.handlers import BaseHandler
 import json
-from static.data.settings import teams, red_question_choice
+from static.data.settings import *
 
 
 class RegisterHandler(BaseHandler):
@@ -15,6 +15,6 @@ class RegisterHandler(BaseHandler):
         self.write(teams[game['teams_num']])
         game['teams_num'] += 1
         if game['teams_num'] == 4:
-            game['current_game_state'] = red_question_choice
+            game['current_game_state'] = states['question'][teams[0]]
         with open('local/current_game_set.json', 'w') as f:
             f.write(json.dumps(game))

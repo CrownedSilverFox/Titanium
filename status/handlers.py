@@ -17,8 +17,10 @@ class StatusHandler(BaseHandler):
         cur_question = {}
         with open('local/current_game_set.json') as f:
             game = json.load(f)
-        if game['current_game_state'] == answer_choice:
+        if game['current_game_state'] == states['answer_choice']:
             cur_question = get_q_by_id(game['current_question_id'])
+            with open('local/current_game_set.json') as f:
+                game['quest_points'] = cur_question['cost']
         answer = {'status': game['current_game_state'],
                   'players_waiting': str(4 - game['teams_num']),
                   'quest': cur_question
