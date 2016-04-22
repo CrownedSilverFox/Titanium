@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="static/css/main.css"/>
+
+    <script src="static/js/jquery-2.2.3.min.js"></script>
+    <script src="static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/js/client-connect.js"></script>
+    <script src="static/js/ws.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="page-header text-center">
+        <h1> QUIZ</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4 col-sm-offset-4 col-sm-4">
+            <form class="form-connect" role="form">
+                <h2 class="form-connect-heading">Connect to Server</h2>
+
+                <div class="input-group">
+                    <span class="input-group-addon">host</span>
+                    <input type="text" class="form-control" name="host" value="localhost">
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">port</span>
+                    <input type="text" class="form-control" name="port" value="8888">
+                </div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit" id="btn_connect">connect</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 REGISTER">
+            Registration waiting: <br/>
+            <ul>
+                <li class="RED">RED</li>
+                <li class="GREEN">GREEN</li>
+                <li class="BLUE">BLUE</li>
+                <li class="YELLOW">YELLOW</li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <table id="demo_table" style="border:solid 2px red; min-width: 200px;min-height: 200px">
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div id="terminal">
+            Terminal: <br/>
+        </div>
+    </div>
+
+
+</div>
+
+</body>
+</html>

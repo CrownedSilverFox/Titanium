@@ -9,7 +9,7 @@ var timer;
 var time = 1;
 
 $(document).ready(function () {
-    $.post('http://localhost:8000/register', function (data) {
+    $.post('http://localhost/register', function (data) {
         console.log(data);
         if (data != 'GAME_FULL') {
             team = data;
@@ -95,7 +95,7 @@ function on_table_click(id) {
 function change_status() {
     setInterval(function () {
         if (state != 'GAME_FULL') {
-            $.post('http://localhost:8000/status', function (data) {
+            $.post('http://localhost/status', function (data) {
                 state = JSON.parse(data);
             });
             if (state && ((state['status'].indexOf(team) > -1) || (state['status'] == 'answer_c'))) {
@@ -120,7 +120,7 @@ function change_status() {
     }, 500)
 }
 function on_question_click(id) {
-    $.post('http://localhost:8000/quest', JSON.stringify(id), function (data) {
+    $.post('http://localhost/quest', JSON.stringify(id), function (data) {
         console.log(data)
     });
 }
@@ -142,7 +142,7 @@ function answer_timer() {
                 answer.checkedAnswer = i+1;
             }
         }
-        $.post('http://localhost:8000/answer', JSON.stringify(answer), function (data) {
+        $.post('http://localhost/answer', JSON.stringify(answer), function (data) {
             points = JSON.parse(data).points;
             refreshPoints();
         })
