@@ -1,0 +1,55 @@
+.form-connect{
+    /*width: 300px;*/
+    /*margin: 0;*/
+}
+.REGISTER > ul > .RED{
+    background-color: #b94f47;
+}
+.REGISTER > ul > .GREEN{
+    background-color: #28a24a;
+}
+.REGISTER > ul > .BLUE{
+    background-color: #4476b9;
+}
+.REGISTER > ul > .YELLOW{
+    background-color: #b99723;
+}
+td {
+    border: 1px solid black;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+   }
+.circle{
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+table {
+    width: 100%;
+    border-spacing: 0;
+}
+.board{
+    border: 2px solid black;
+    float: left;
+}
+.questions{
+    border: 2px solid black;
+    float: right;
+}
+#answer_choice{
+    border: 2px solid black;
+}
+
+.magic{
+    clear: both;
+}
+
+#board img{
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+.status{
+    border: 2px solid red;
+}

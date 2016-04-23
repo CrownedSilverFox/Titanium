@@ -18,38 +18,12 @@ $(document).ready(function () {
         }
         console.log(team)
     });
-    load_desk();
+
     $.getJSON("data/questions.json", onDataLoad);
     setTimeout(change_status, 1000);
 });
 
-function load_desk() {
-    var table = $('#board1');
-    var onclick1 = "on_table_click(id)";
-    for (var i = 0; i < 10; i++) {
-        var tr = $(document.createElement('tr'));
-        for (var j = 0; j < 10; j++) {
-            var td = $(document.createElement('td'));
-            td.attr('id', ('' + i) + ('_' + j));
-            td.attr('onclick', onclick1);
-            if ((i <= 4) && (j <= 4)) {
-                var img = $('<img />', {src: yellow_src});
-            }
-            if ((i <= 4) && (j > 4)) {
-                var img = $('<img />', {src: red_src});
-            }
-            if ((i > 4) && (j <= 4)) {
-                var img = $('<img />', {src: yellow_src});
-            }
-            if ((i > 4) && (j > 4)) {
-                var img = $('<img />', {src: red_src});
-            }
-            td.append(img);
-            tr.append(td);
-        }
-        table.append(tr)
-    }
-}
+
 
 function onDataLoad(data) {
     var table = $('#questions');
@@ -85,12 +59,7 @@ function on_question_choice(quest) {
     timer = setInterval(answer_timer, 1000)
 }
 
-function on_table_click(id) {
-    var td = $('#' + id);
-    var img = $('<img />', {src: yellow_src});
-    td.empty();
-    td.append(img);
-}
+
 
 function change_status() {
     setInterval(function () {
