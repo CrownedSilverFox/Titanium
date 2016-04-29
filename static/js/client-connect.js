@@ -6,10 +6,9 @@ var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca0705
 var team;
 var questData;
 var state = 0;
-var chosenA = true;
-var timer;
-var time = 1;
 var desk;
+var quests;
+var ws;
 
 function Form(selector){
     var self = this;
@@ -20,7 +19,10 @@ function Form(selector){
 
     $("#btn_connect").click(function (evt) {
         evt.preventDefault();
-        var ws = WS(self.$host.val(), self.$port.val(), self.uri, self);
+        ws = new WS(self.$host.val(), self.$port.val(), self.uri, self);
+        var user = new NewUser();
+        //console.log("!!!!");
+        ws.handleEvents(user.oncreate, "newuser");
         //ws.onmessage = function (evt) {
         //    log("message received: " + evt.data)
         //};
@@ -94,6 +96,31 @@ function Desk(selector) {
     };
 }
 
+function NewUser(){
+    var self = this;
+    this.oncreate = function(data){
+        console.log("Create new User, data = ", data)
+    }
+}
+
+function questChoice(data) {
+    var table = $('#questions');
+    var onclick = "on_question_click(id)";
+    questData = data;
+    for (var key in data) {
+        var tr = $(document.createElement('tr'));
+        for (var i = 0; i < data[key].length; i++) {
+            var td = $(document.createElement('td'));
+            var button = $('<button />', {text: key + ': ' + data[key][i].cost});
+            button.attr('id', "" + data[key][i].id);
+            td.append(button);
+            tr.append(td);
+            button.attr('onclick', onclick)
+        }
+        table.append(tr)
+    }
+}
+
 $(function () {
     log = function (data) {
         $("div#terminal").prepend("</br>" + data);
@@ -101,7 +128,7 @@ $(function () {
     };
     var send = $("#btn_send");
     var connect_form = new Form("form.form-connect");
-    desk = new Desk('#board')
+    desk = new Desk('#board');
 
 });
 

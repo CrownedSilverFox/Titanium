@@ -10,10 +10,49 @@ SELECT_QUESTION = 1
 SELECT_ANSWER = 2
 
 questions = {
-    "q1": ["v1", "v2", "v3"],
-    "q2": ["v1", "v2", "v3"],
-    "q3": ["v1", "v2", "v3"],
+  "quest-group-1": [
+    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 1},
+    {"cost": "4", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса2", "id": 2},
+    {"cost": "6", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 3},
+    {"cost": "8", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 4}
+  ],
+  "quest-group-2": [
+    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 5},
+    {"cost": "4", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 6},
+    {"cost": "6", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 7},
+    {"cost": "8", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 8}
+  ],
+  "quest-group-3": [
+    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 9},
+    {"cost": "4", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 10},
+    {"cost": "6", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 11},
+    {"cost": "8", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 12}
+  ],
+  "quest-group-4": [
+    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 13},
+    {"cost": "4", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 14},
+    {"cost": "6", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 15},
+    {"cost": "8", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 16}
+  ]
 }
+right_answers = [
+  {"id": 1, "right_answer_num": 1},
+  {"id": 2, "right_answer_num": 2},
+  {"id": 3, "right_answer_num": 3},
+  {"id": 4, "right_answer_num": 4},
+  {"id": 5, "right_answer_num": 1},
+  {"id": 6, "right_answer_num": 2},
+  {"id": 7, "right_answer_num": 3},
+  {"id": 8, "right_answer_num": 4},
+  {"id": 9, "right_answer_num": 1},
+  {"id": 10, "right_answer_num": 2},
+  {"id": 11, "right_answer_num": 3},
+  {"id": 12, "right_answer_num": 4},
+  {"id": 13, "right_answer_num": 1},
+  {"id": 14, "right_answer_num": 2},
+  {"id": 15, "right_answer_num": 3},
+  {"id": 16, "right_answer_num": 4}
+]
 
 
 class Game:
@@ -37,12 +76,16 @@ class Game:
         if len(self.teams) == len(TEAM_COLORS):
             self.state += 1
         for team in self.teams:
-            team.write_message(str(handler))
+            team.write_message({"team": handler.color})
+            team.write_message({'key': 'questions', 'questions': questions})
+            team.write_message({"key": "newuser"})
 
     def send_json(self):
         json = {}
         if self.state == REGISTER:
             json[""]
+        # elif self.state == SELECT_QUESTION:
+        #     self.teams[self.turn].write_message({'key': 'question_select', 'questions': questions})
 
 
 class Team:
