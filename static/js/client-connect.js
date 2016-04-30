@@ -19,27 +19,7 @@ function Form(selector){
 
     $("#btn_connect").click(function (evt) {
         evt.preventDefault();
-        ws = new WS(self.$host.val(), self.$port.val(), self.uri, self);
-        var user = new NewUser();
-        //console.log("!!!!");
-        ws.handleEvents(user.oncreate, "newuser");
-        //ws.onmessage = function (evt) {
-        //    log("message received: " + evt.data)
-        //};
-        //
-        //ws.onclose = function (evt) {
-        //    log("***Connection Closed***");
-        //    self.$port.css("background", "#ff0000");
-        //    self.$host.css("background", "#ff0000");
-        //    self.show();
-        //};
-        //
-        //ws.onopen = function (evt) {
-        //    log("***Connection Open***");
-        //    $("input[name='host']").css("background", "#00ff00");
-        //    $("input[name='port']").css("background", "#00ff00");
-        //    self.hide();
-        //};
+        ws.connect(self.$host.val(), self.$port.val(), self.uri, self);
     });
 
     this.hide = function(){
@@ -88,37 +68,45 @@ function Desk(selector) {
     };
 
     this.hide = function(){
-        $form.hide();
+        table.hide();
     };
 
     this.show = function(){
-        $form.show();
+        table.show();
     };
 }
 
-function NewUser(){
+function QuestChoice(selector) {
     var self = this;
-    this.oncreate = function(data){
-        console.log("Create new User, data = ", data)
-    }
-}
+    var table = $(selector);
+    var onclick = "quests.onClick(id)";
+    this.init = function(data) {
+        table.clear();
+        data = data.questions;
+        for (var key in data) {
+            var tr = $(document.createElement('tr'));
+            for (var i = 0; i < data[key].length; i++) {
+                var td = $(document.createElement('td'));
+                var button = $('<button />', {text: key + ': ' + data[key][i].cost});
+                button.attr('id', "" + data[key][i].id);
+                td.append(button);
+                tr.append(td);
+                button.attr('onclick', onclick)
+            }
+            table.append(tr)
+    }};
+    this.onClick = function(id) {
+        var data = {'key': 'quest_sel', 'id': id};
+        ws.send(data);
+        self.hide();
+    };
+    this.hide = function(){
+        table.hide();
+    };
 
-function questChoice(data) {
-    var table = $('#questions');
-    var onclick = "on_question_click(id)";
-    questData = data;
-    for (var key in data) {
-        var tr = $(document.createElement('tr'));
-        for (var i = 0; i < data[key].length; i++) {
-            var td = $(document.createElement('td'));
-            var button = $('<button />', {text: key + ': ' + data[key][i].cost});
-            button.attr('id', "" + data[key][i].id);
-            td.append(button);
-            tr.append(td);
-            button.attr('onclick', onclick)
-        }
-        table.append(tr)
-    }
+    this.show = function(){
+        table.show();
+    };
 }
 
 $(function () {
@@ -129,6 +117,11 @@ $(function () {
     var send = $("#btn_send");
     var connect_form = new Form("form.form-connect");
     desk = new Desk('#board');
+    quests = new QuestChoice('#questions');
+    quests.hide();
+    ws = new WS();
+    ws.handleEvents(quests.init, 'questions');
+    ws.handleEvents(quests.show, 'quest_sel')
 
 });
 

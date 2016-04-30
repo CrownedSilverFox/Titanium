@@ -75,17 +75,17 @@ class Game:
         """
         if len(self.teams) == len(TEAM_COLORS):
             self.state += 1
+            self.teams[self.turn].write_message("")
         for team in self.teams:
             team.write_message({"team": handler.color})
             team.write_message({'key': 'questions', 'questions': questions})
-            team.write_message({"key": "newuser"})
 
     def send_json(self):
         json = {}
         if self.state == REGISTER:
             json[""]
-        # elif self.state == SELECT_QUESTION:
-        #     self.teams[self.turn].write_message({'key': 'question_select', 'questions': questions})
+        elif self.state == SELECT_QUESTION:
+            self.teams[self.turn].write_message({'key': 'quest_sel'})
 
 
 class Team:
@@ -134,12 +134,8 @@ class WSHandler(tornado.websocket.WebSocketHandler, Team):
         # self.write_message("Hello")
 
     def on_message(self, message):
+        print(type(message))
         print("WSHandler Received message: {}".format(message))
-        # for key, value in enumerate(self.application.webSocketsPool):
-        #     if value != self:
-        #         value.ws_connection.write_message(message)
-        #     else:
-        #         self.ws_connection.write_message("ping")
 
     def on_close(self):
         print("close connection", self)
