@@ -9,6 +9,7 @@
     <script src="static/js/jquery-2.2.3.min.js"></script>
     <script src="static/bootstrap/js/bootstrap.min.js"></script>
     <script src="static/js/ws.js"></script>
+    <script src="static/js/register.js"></script>
     <script src="static/js/client-connect.js"></script>
 
 </head>
@@ -35,7 +36,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-8 REGISTER">
+        <div class="col-md-8 RegisterLED">
             Registration waiting: <br/>
             <ul>
                 <li class="RED">RED</li>
@@ -49,11 +50,15 @@
         <div class="col-md-6 DESK">
             <table id="board"></table> </div>
         <div class="col-md-6 QUESTIONS">
-            <table id="questions"></table>
+            <table id="questions">
+                Тут будут вопросы для выбора
+            </table>
         </div>
     </div>
     <div class="row">
-        <div id="answer_choice"></div>
+        <div id="answer_choice">
+
+        </div>
     </div>
     <div class="row">
         <div id="terminal">

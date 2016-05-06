@@ -2,16 +2,16 @@
     /*width: 300px;*/
     /*margin: 0;*/
 }
-.REGISTER > ul > .RED{
+.RegisterLED > ul > .RED{
     background-color: #b94f47;
 }
-.REGISTER > ul > .GREEN{
+.RegisterLED > ul > .GREEN{
     background-color: #28a24a;
 }
-.REGISTER > ul > .BLUE{
+.RegisterLED > ul > .BLUE{
     background-color: #4476b9;
 }
-.REGISTER > ul > .YELLOW{
+.RegisterLED > ul > .YELLOW{
     background-color: #b99723;
 }
 td {

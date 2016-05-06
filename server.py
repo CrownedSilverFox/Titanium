@@ -3,89 +3,96 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.web
 import socket
+from json import JSONEncoder
+import os
+import json
 
 TEAM_COLORS = ["RED", "GREEN", "BLUE", "YELLOW"]
 REGISTER = 0
 SELECT_QUESTION = 1
 SELECT_ANSWER = 2
-
-questions = {
-  "quest-group-1": [
-    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 1},
-    {"cost": "4", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса2", "id": 2},
-    {"cost": "6", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 3},
-    {"cost": "8", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 4}
-  ],
-  "quest-group-2": [
-    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 5},
-    {"cost": "4", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 6},
-    {"cost": "6", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 7},
-    {"cost": "8", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 8}
-  ],
-  "quest-group-3": [
-    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 9},
-    {"cost": "4", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 10},
-    {"cost": "6", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 11},
-    {"cost": "8", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 12}
-  ],
-  "quest-group-4": [
-    {"cost": "2", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 13},
-    {"cost": "4", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 14},
-    {"cost": "6", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 15},
-    {"cost": "8", "answers": ["ответ1", "ответ2", "ответ3", "ответ4"], "text": "текст вопроса", "id": 16}
-  ]
-}
-right_answers = [
-  {"id": 1, "right_answer_num": 1},
-  {"id": 2, "right_answer_num": 2},
-  {"id": 3, "right_answer_num": 3},
-  {"id": 4, "right_answer_num": 4},
-  {"id": 5, "right_answer_num": 1},
-  {"id": 6, "right_answer_num": 2},
-  {"id": 7, "right_answer_num": 3},
-  {"id": 8, "right_answer_num": 4},
-  {"id": 9, "right_answer_num": 1},
-  {"id": 10, "right_answer_num": 2},
-  {"id": 11, "right_answer_num": 3},
-  {"id": 12, "right_answer_num": 4},
-  {"id": 13, "right_answer_num": 1},
-  {"id": 14, "right_answer_num": 2},
-  {"id": 15, "right_answer_num": 3},
-  {"id": 16, "right_answer_num": 4}
-]
+# TODO: не забывать изменять максимальный статус
+MAX_STATE = SELECT_ANSWER  # Всегда равна максимальному статусу
 
 
 class Game:
     def __init__(self):
-        self.state = REGISTER  # статус хода
-        self.turn = 0  # индекс команды, чей сейчас ход
+        self._state = REGISTER  # статус хода
+        self._turn = 0  # индекс команды, чей сейчас ход
         self.teams = []  # список команд
+        self.do = {
+            REGISTER: lambda: None,
+            SELECT_QUESTION: self.select_question,
+            SELECT_ANSWER: self.select_answer
+        }
 
-    def next_turn(self):
-        self.turn += 1
-        if self.turn == len(TEAM_COLORS):
-            self.turn = 0
-            self.state += 1
-
-    def connect(self, handler):
-        """
-
-        :param handler:
-        :return:
-        """
-        if len(self.teams) == len(TEAM_COLORS):
-            self.state += 1
-            self.teams[self.turn].write_message("")
+    def _send_all(self, json, exclude=None):
         for team in self.teams:
-            team.write_message({"team": handler.color})
-            team.write_message({'key': 'questions', 'questions': questions})
+            if team == exclude:
+                continue
+            team.write_message(json)
 
-    def send_json(self):
-        json = {}
-        if self.state == REGISTER:
-            json[""]
-        elif self.state == SELECT_QUESTION:
-            self.teams[self.turn].write_message({'key': 'quest_sel'})
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, value):
+        if value > MAX_STATE:
+            self._state = 1
+            self._turn = 0
+        else:
+            self._state = value
+
+        self.do[self.state]()
+
+    @property
+    def turn(self):
+        return self._state
+
+    @turn.setter
+    def turn(self, value):
+        self._turn = value
+        # print([team.color for team in self.teams])
+
+    def connect(self, team):
+        """
+        Подключение команды
+        """
+        # TODO: добавить восстановление подключения команды
+        if self.state != REGISTER:
+            raise ValueError("Game in progress, registration is closed")
+            # team.write_message({"key": "error", "message": "Game in progress, registration is closed"})
+            # return
+
+        self.teams.append(team)
+        if len(TEAM_COLORS) == len(self.teams):
+            self.state += 1
+            self._send_all({"key": "register", "register_closed": True})
+            return
+
+        # Сообщения для индикатора подключения команд
+        self._send_all({"key": "register", "connected_teams": [team.color for team in self.teams]})
+
+    def disconnect(self, team):
+        """
+        Отключение команды
+        """
+        self.teams.remove(team)
+        if self._state == REGISTER:
+            self._send_all({"key": "register", "connected_teams": [team.color for team in self.teams]})
+
+    def select_question(self):
+        print(".select_question()")
+        with open(os.path.join("data", "questions.json")) as f:
+            questions = json.load(f)
+        print("questions =", questions)
+        self._send_all({"key": "questions", "questions": questions})
+        self.teams[self._turn].write_message({"key": "quest_sel"})
+
+    def select_answer(self):
+        print(".select_answer()")
+        pass
 
 
 class Team:
@@ -125,10 +132,6 @@ class Application(tornado.web.Application):
 
 class WSHandler(tornado.websocket.WebSocketHandler, Team):
     def open(self):
-        if self.application.game.state != REGISTER:
-            # TODO: тут надо восстанавливать подключение игрока
-            pass
-        self.application.game.teams.append(self)
         self.application.game.connect(self)
         print("client connect", self.color)
         # self.write_message("Hello")
@@ -139,7 +142,7 @@ class WSHandler(tornado.websocket.WebSocketHandler, Team):
 
     def on_close(self):
         print("close connection", self)
-        self.application.game.teams.remove(self)
+        self.application.game.disconnect(self)
         self.on_delete()
 
     def check_origin(self, origin):
