@@ -8,11 +8,13 @@ import os
 import json
 
 TEAM_COLORS = ["RED", "GREEN", "BLUE", "YELLOW"]
+# Фазы(state) игры
 REGISTER = 0
 SELECT_QUESTION = 1
 SELECT_ANSWER = 2
-# TODO: не забывать изменять максимальный статус
-MAX_STATE = SELECT_ANSWER  # Всегда равна максимальному статусу
+SET_MARKERS = 3
+# TODO: не забывать изменять максимальный статус, при добавленни новых фаз
+MAX_STATE = SET_MARKERS  # Всегда равна максимальному статусу
 
 
 class Game:
@@ -25,12 +27,26 @@ class Game:
             SELECT_QUESTION: self.select_question,
             SELECT_ANSWER: self.select_answer
         }
+        self.questions = None
+        self.load_data()
+
+    def load_data(self):
+        with open(os.path.join("data", "questions.json")) as f:
+            self.questions = json.load(f)
 
     def _send_all(self, json, exclude=None):
         for team in self.teams:
             if team == exclude:
                 continue
             team.write_message(json)
+
+    def received_message(self, team, message):
+        # TODO: Данный метод реализован неверно, т.к. не соответствует нашей выбранной концепуии смены state и turn...
+        if message["key"] == "quest_sel":
+            # TODO: отправлять вопрос по message["id"], пока заглушка
+            self._send_all({"key": "question",
+                            "question": {"cost": "2", "answers": ["вариант1", "вариант2", "вариант3", "вариант4"],
+                                         "text": "текст вопроса", "id": 9}})
 
     @property
     def state(self):
@@ -84,10 +100,9 @@ class Game:
 
     def select_question(self):
         print(".select_question()")
-        with open(os.path.join("data", "questions.json")) as f:
-            questions = json.load(f)
-        print("questions =", questions)
-        self._send_all({"key": "questions", "questions": questions})
+        # Всем командам отсылаем вопросы
+        self._send_all({"key": "questions", "questions": self.questions})
+        # Текущей команде(чей сейчас ход) отсылаем сообщение "Выберите вопрос"
         self.teams[self._turn].write_message({"key": "quest_sel"})
 
     def select_answer(self):
@@ -126,8 +141,8 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers)
 
 
-    # def connect_team(self, team):
-    #     self.teams.append(team)
+        # def connect_team(self, team):
+        # self.teams.append(team)
 
 
 class WSHandler(tornado.websocket.WebSocketHandler, Team):
@@ -137,8 +152,10 @@ class WSHandler(tornado.websocket.WebSocketHandler, Team):
         # self.write_message("Hello")
 
     def on_message(self, message):
-        print(type(message))
+        message = json.loads(message)
+        # print(type(message))
         print("WSHandler Received message: {}".format(message))
+        self.application.game.received_message(self, message)
 
     def on_close(self):
         print("close connection", self)

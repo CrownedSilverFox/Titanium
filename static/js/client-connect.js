@@ -97,20 +97,34 @@ function QuestChoice(selector) {
             }
             $table.append(tr)
         }
+        // Блокирует кнопки выбора вопроса
         $table.find("button").attr("disabled", "disabled");
     };
     this.onClick = function(id) {
         var data = {'key': 'quest_sel', 'id': id};
         ws.send(data);
-        self.hide();
+        $table.hide();
     };
     this.unblock = function(){
+        // Разблокирует кнопки выбора вопроса
         $table.find("button").prop( "disabled", false );
     };
 
     this.show = function(){
         $table.show();
     };
+}
+
+function AnswerChoice(selector) {
+    var self = this;
+    var $obj = $(selector);
+    this.init = function(data) {
+        var text = data.question.text;
+        $obj.html('<b>'+text+'</b>');
+    };
+    this.send_answer = function(){
+        ws.send("");
+    }
 }
 
 $(function () {
@@ -121,13 +135,16 @@ $(function () {
     var send = $("#btn_send");
     var connect_form = new Form("form.form-connect");
     desk = new Desk('#board');
+    desk.hide();
     quests = new QuestChoice('#questions');
-    //quests.hide();
     ws = new WS();
     ws.handleEvents(quests.init, 'questions');
     ws.handleEvents(quests.unblock, 'quest_sel');
 
     var register_led = new RegisterLED('.RegisterLED');
-    ws.handleEvents(register_led.on_change, 'register')
+    ws.handleEvents(register_led.on_change, 'register');
+
+    var answer_choice = new AnswerChoice("#answer_choice");
+    ws.handleEvents(answer_choice.init, "question");
 });
 
