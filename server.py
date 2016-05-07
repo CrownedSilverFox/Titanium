@@ -29,6 +29,7 @@ class Game:
         }
         self.questions = None
         self.load_data()
+        self.question = None
 
     def load_data(self):
         with open(os.path.join("data", "questions.json")) as f:
@@ -43,10 +44,9 @@ class Game:
     def received_message(self, team, message):
         # TODO: Данный метод реализован неверно, т.к. не соответствует нашей выбранной концепуии смены state и turn...
         if message["key"] == "quest_sel":
-            # TODO: отправлять вопрос по message["id"], пока заглушка
-            self._send_all({"key": "question",
-                            "question": {"cost": "2", "answers": ["вариант1", "вариант2", "вариант3", "вариант4"],
-                                         "text": "текст вопроса", "id": 9}})
+            self._send_all(json.dumps({'key': 'question', 'question': self.find_quest(int(message['id']))}))
+
+
 
     @property
     def state(self):
@@ -64,7 +64,7 @@ class Game:
 
     @property
     def turn(self):
-        return self._state
+        return self._turn
 
     @turn.setter
     def turn(self, value):
@@ -82,7 +82,7 @@ class Game:
             # return
 
         self.teams.append(team)
-        if len(TEAM_COLORS) == len(self.teams):
+        if len(TEAM_COLORS[:2]) == len(self.teams):
             self.state += 1
             self._send_all({"key": "register", "register_closed": True})
             return
@@ -107,11 +107,16 @@ class Game:
 
     def select_answer(self):
         print(".select_answer()")
-        pass
+
+    def find_quest(self, id):
+        for group in self.questions.values():
+                for quest in group:
+                    if quest['id'] == id:
+                        return quest
 
 
 class Team:
-    team_colors = TEAM_COLORS[:]
+    team_colors = TEAM_COLORS[:2]
 
     def __init__(self):
         if not self.team_colors:

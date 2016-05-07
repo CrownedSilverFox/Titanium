@@ -119,8 +119,14 @@ function AnswerChoice(selector) {
     var self = this;
     var $obj = $(selector);
     this.init = function(data) {
-        var text = data.question.text;
-        $obj.html('<b>'+text+'</b>');
+        $obj.empty();
+        var text = '<label>'+data.question.text+'</label><br>';
+        $obj.append(text);
+        for (var i = 0; i < 4; i++) {
+            var line = '<input type="radio" name="answChoice"><label>' + data.question.answers[i] +
+                '</label><br>';
+            $obj.append(line);
+        }
     };
     this.send_answer = function(){
         ws.send("");
