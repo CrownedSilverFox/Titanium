@@ -6,6 +6,8 @@ import socket
 from json import JSONEncoder
 import os
 import json
+import time
+
 
 TEAM_COLORS = ["RED", "GREEN", "BLUE", "YELLOW"]
 # Фазы(state) игры
@@ -30,6 +32,7 @@ class Game:
         self.questions = None
         self.load_data()
         self.question = None
+        self.time_end = 5
 
     def load_data(self):
         with open(os.path.join("data", "questions.json")) as f:
@@ -44,9 +47,8 @@ class Game:
     def received_message(self, team, message):
         # TODO: Данный метод реализован неверно, т.к. не соответствует нашей выбранной концепуии смены state и turn...
         if message["key"] == "quest_sel":
-            self._send_all(json.dumps({'key': 'question', 'question': self.find_quest(int(message['id']))}))
-
-
+            self._send_all(json.dumps({'key': 'question', 'question': self.chosen_quest(int(message['id']))}))
+            self.select_answer()
 
     @property
     def state(self):
@@ -56,7 +58,7 @@ class Game:
     def state(self, value):
         if value > MAX_STATE:
             self._state = 1
-            self._turn = 0
+            self.turn += 1
         else:
             self._state = value
 
@@ -69,7 +71,6 @@ class Game:
     @turn.setter
     def turn(self, value):
         self._turn = value
-        # print([team.color for team in self.teams])
 
     def connect(self, team):
         """
@@ -78,8 +79,6 @@ class Game:
         # TODO: добавить восстановление подключения команды
         if self.state != REGISTER:
             raise ValueError("Game in progress, registration is closed")
-            # team.write_message({"key": "error", "message": "Game in progress, registration is closed"})
-            # return
 
         self.teams.append(team)
         if len(TEAM_COLORS[:2]) == len(self.teams):
@@ -106,12 +105,18 @@ class Game:
         self.teams[self._turn].write_message({"key": "quest_sel"})
 
     def select_answer(self):
-        print(".select_answer()")
+        for second in range(0, self.time_end):
+            message = {'key': 'time', 'time': second}
+            self._send_all(json.dumps(message))
+            time.sleep(1)
+        message = {'key': 'time_up'}
+        self._send_all(json.dumps(message))
 
-    def find_quest(self, id):
-        for group in self.questions.values():
-                for quest in group:
+    def chosen_quest(self, id):
+        for group in self.questions.keys():
+                for num, quest in enumerate(self.questions[group]):
                     if quest['id'] == id:
+                        self.questions[group].pop(num)
                         return quest
 
 
@@ -133,32 +138,20 @@ class Team:
 class Application(tornado.web.Application):
     def __init__(self):
         self.game = Game()
-        # settings = {
-        # 'static_url_prefix': '/static/',
-        # }
-        # connection = pymongo.Connection('127.0.0.1', 27017)
-        # self.db = connection.chat
         handlers = [
-            # (r'/', WSHandler),
             (r'/websocket', WSHandler),
         ]
 
         tornado.web.Application.__init__(self, handlers)
 
 
-        # def connect_team(self, team):
-        # self.teams.append(team)
-
-
 class WSHandler(tornado.websocket.WebSocketHandler, Team):
     def open(self):
         self.application.game.connect(self)
         print("client connect", self.color)
-        # self.write_message("Hello")
 
     def on_message(self, message):
         message = json.loads(message)
-        # print(type(message))
         print("WSHandler Received message: {}".format(message))
         self.application.game.received_message(self, message)
 

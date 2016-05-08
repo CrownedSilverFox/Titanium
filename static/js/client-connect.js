@@ -133,6 +133,11 @@ function AnswerChoice(selector) {
     }
 }
 
+function Timer(selector) {
+    var self = this;
+    var $obj = $(selector);
+}
+
 $(function () {
     log = function (data) {
         $("div#terminal").prepend("</br>" + data);
