@@ -9,6 +9,7 @@ var state = 0;
 var desk;
 var quests;
 var ws;
+var timer;
 
 function Form(selector){
     var self = this;
@@ -127,15 +128,42 @@ function AnswerChoice(selector) {
                 '</label><br>';
             $obj.append(line);
         }
+        self.show();
     };
     this.send_answer = function(){
-        ws.send("");
+        var answRadios = document.getElementsByName('answChoice');
+        var answer = {'checkedAnswer': 0, 'key': 'answer_checked'};
+        for (var i = 0; i < 4; i++) {
+            if (answRadios[i].checked) {
+                answer.checkedAnswer = i+1;
+            }
+        }
+        ws.send(answer);
+        self.hide();
+        timer.hide();
+    };
+    this.hide = function () {
+        $obj.hide();
+    };
+    this.show = function () {
+        $obj.show();
     }
 }
 
 function Timer(selector) {
     var self = this;
     var $obj = $(selector);
+    this.changeTime = function(data) {
+        $obj.empty();
+        $obj.append('<label>Времени осталось: '+data.time+'</label>');
+        self.show();
+    };
+    this.hide = function () {
+        $obj.hide()
+    };
+    this.show = function () {
+        $obj.show()  
+    }
 }
 
 $(function () {
@@ -157,5 +185,9 @@ $(function () {
 
     var answer_choice = new AnswerChoice("#answer_choice");
     ws.handleEvents(answer_choice.init, "question");
+    ws.handleEvents(answer_choice.send_answer, 'time_up');
+    
+    timer = new Timer('#timer');
+    ws.handleEvents(timer.changeTime, 'time');
 });
 

@@ -24,19 +24,38 @@ class Game:
         self._state = REGISTER  # статус хода
         self._turn = 0  # индекс команды, чей сейчас ход
         self.teams = []  # список команд
+        self.points = [0, 0, 0, 0]
         self.do = {
             REGISTER: lambda: None,
             SELECT_QUESTION: self.select_question,
             SELECT_ANSWER: self.select_answer
         }
         self.questions = None
+        self.answers = None
         self.load_data()
         self.question = None
         self.time_end = 5
+        self.desk_matrix = []
 
     def load_data(self):
         with open(os.path.join("data", "questions.json")) as f:
             self.questions = json.load(f)
+        with open(os.path.join("data", "right_answers.json")) as f:
+            self.answers = json.load(f)
+        markers = []
+        for i in range(0, 5):
+            markers.append('RED')
+        for i in range(0, 5):
+            markers.append('GREEN')
+        for i in range(0, 5):
+            self.desk_matrix.append(markers)
+        markers = []
+        for i in range(0, 5):
+            markers.append('BLUE')
+        for i in range(0, 5):
+            markers.append('YELLOW')
+        for i in range(0, 5):
+            self.desk_matrix.append(markers)
 
     def _send_all(self, json, exclude=None):
         for team in self.teams:
@@ -45,10 +64,17 @@ class Game:
             team.write_message(json)
 
     def received_message(self, team, message):
-        # TODO: Данный метод реализован неверно, т.к. не соответствует нашей выбранной концепуии смены state и turn...
+        # TODO: Данный метод реализован неверно, т.к. не соответствует нашей выбранной концепции смены state и turn...
         if message["key"] == "quest_sel":
             self._send_all(json.dumps({'key': 'question', 'question': self.chosen_quest(int(message['id']))}))
             self.select_answer()
+        if message['key'] == 'answer_checked':
+            if self.check_asnwer(message['checkedAnswer']):
+                team.write_message(json.dumps({'key': 'points', 'points': self.question['cost']}))
+                self.points[self.teams.index(team)] = self.question['cost']
+            else:
+                team.write_message(json.dumps({'key': 'points', 'points': 0}))
+
 
     @property
     def state(self):
@@ -105,7 +131,7 @@ class Game:
         self.teams[self._turn].write_message({"key": "quest_sel"})
 
     def select_answer(self):
-        for second in range(0, self.time_end):
+        for second in range(1, self.time_end+1)[::-1]:
             message = {'key': 'time', 'time': second}
             self._send_all(json.dumps(message))
             time.sleep(1)
@@ -117,7 +143,13 @@ class Game:
                 for num, quest in enumerate(self.questions[group]):
                     if quest['id'] == id:
                         self.questions[group].pop(num)
+                        self.question = quest
                         return quest
+
+    def check_asnwer(self, answer):
+        for quest in self.answers:
+            if quest['id'] == self.question['id']:
+                return answer == quest['answer']
 
 
 class Team:
@@ -168,7 +200,7 @@ application = Application()
 
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(8888)
+    http_server.listen(8889)
     myIP = socket.gethostbyname(socket.gethostname())
     print('*** Websocket Server Started at %s***' % myIP)
     tornado.ioloop.IOLoop.instance().start()
