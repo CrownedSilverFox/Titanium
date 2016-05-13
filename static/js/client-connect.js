@@ -1,8 +1,6 @@
 var log;
 var uri = "/websocket";
 var points = 0;
-var yellow_src = 'http://www.komus.ru/photo/_full/331966_1.jpg';
-var red_src = 'http://static.ofisshop.ru/iblock/089/089ba49b21a547fd17f77bca070517c6.png';
 var team;
 var questData;
 var state = 0;
@@ -34,33 +32,23 @@ function Form(selector){
 
 function Desk(selector) {
     var self = this;
-    self.inf = {};
-    var table = $(selector);
-    var onclick1 = "desk.onClick(id)";
-    for (var i = 0; i < 10; i++) {
-        var tr = $(document.createElement('tr'));
-        for (var j = 0; j < 10; j++) {
-            var td = $(document.createElement('td'));
-            td.attr('id', ('' + i) + ('_' + j));
-            td.attr('onclick', onclick1);
-            if ((i <= 4) && (j <= 4)) {
-                var img = $('<img />', {src: yellow_src});
+    var $obj = $(selector);
+    var images;
+    this.init = function(data) {
+        var onclick1 = "desk.onClick(id)";
+        for (var i = 0; i < 10; i++) {
+            var tr = $(document.createElement('tr'));
+            for (var j = 0; j < 10; j++) {
+                var td = $(document.createElement('td'));
+                td.attr('id', ('' + i) + ('_' + j));
+                td.attr('onclick', onclick1);
+                var img = $('<img />', {src: data.matrix[i][j]});
+                td.append(img);
+                tr.append(td);
             }
-            if ((i <= 4) && (j > 4)) {
-                var img = $('<img />', {src: red_src});
-            }
-            if ((i > 4) && (j <= 4)) {
-                var img = $('<img />', {src: yellow_src});
-            }
-            if ((i > 4) && (j > 4)) {
-                var img = $('<img />', {src: red_src});
-            }
-            td.append(img);
-            tr.append(td);
+            $obj.append(tr)
         }
-        table.append(tr)
-    }
-
+    };
     this.onClick = function (id) {
         var td = $('#' + id);
         var img = $('<img />', {src: yellow_src});
@@ -69,13 +57,15 @@ function Desk(selector) {
     };
 
     this.hide = function(){
-        table.hide();
+        $obj.hide();
     };
 
     this.show = function(){
-        table.show();
+        $obj.show();
     };
-}
+
+    this.change = function() {};
+};
 
 function QuestChoice(selector) {
     var self = this;
@@ -114,6 +104,9 @@ function QuestChoice(selector) {
     this.show = function(){
         $table.show();
     };
+    this.hide = function() {
+        $table.hide();
+    }
 }
 
 function AnswerChoice(selector) {
@@ -128,11 +121,12 @@ function AnswerChoice(selector) {
                 '</label><br>';
             $obj.append(line);
         }
+        quests.hide();
         self.show();
     };
     this.send_answer = function(){
         var answRadios = document.getElementsByName('answChoice');
-        var answer = {'checkedAnswer': 0, 'key': 'answer_checked'};
+        var answer = {'checkedAnswer': -1, 'key': 'answer_checked'};
         for (var i = 0; i < 4; i++) {
             if (answRadios[i].checked) {
                 answer.checkedAnswer = i+1;
@@ -166,6 +160,22 @@ function Timer(selector) {
     }
 }
 
+function Points(selector) {
+    var self = this;
+    var $obj = $(selector);
+    this.pointsChanged = function(data) {
+        $obj.empty();
+        $obj.append('<label>Ваши очки: '+data.points+'</label>');
+        self.show();
+    };
+    this.hide = function () {
+        $obj.hide()
+    };
+    this.show = function () {
+        $obj.show()
+    };
+}
+
 $(function () {
     log = function (data) {
         $("div#terminal").prepend("</br>" + data);
@@ -173,8 +183,6 @@ $(function () {
     };
     var send = $("#btn_send");
     var connect_form = new Form("form.form-connect");
-    desk = new Desk('#board');
-    desk.hide();
     quests = new QuestChoice('#questions');
     ws = new WS();
     ws.handleEvents(quests.init, 'questions');
@@ -189,5 +197,14 @@ $(function () {
     
     timer = new Timer('#timer');
     ws.handleEvents(timer.changeTime, 'time');
+
+    var points = new Points('#points');
+    ws.handleEvents(points.pointsChanged, 'points');
+
+    desk = new Desk('#board');
+    desk.hide();
+    ws.handleEvents(desk.init, 'matrix');
+    ws.handleEvents(desk.change, 'mark');
+
 });
 

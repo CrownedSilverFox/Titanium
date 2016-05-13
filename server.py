@@ -3,20 +3,12 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.web
 import socket
-from json import JSONEncoder
 import os
 import json
 import time
+from settings import *
 
 
-TEAM_COLORS = ["RED", "GREEN", "BLUE", "YELLOW"]
-# Фазы(state) игры
-REGISTER = 0
-SELECT_QUESTION = 1
-SELECT_ANSWER = 2
-SET_MARKERS = 3
-# TODO: не забывать изменять максимальный статус, при добавленни новых фаз
-MAX_STATE = SET_MARKERS  # Всегда равна максимальному статусу
 
 
 class Game:
@@ -32,30 +24,23 @@ class Game:
         }
         self.questions = None
         self.answers = None
-        self.load_data()
         self.question = None
         self.time_end = 5
         self.desk_matrix = []
+        self.load_data()
 
     def load_data(self):
         with open(os.path.join("data", "questions.json")) as f:
             self.questions = json.load(f)
         with open(os.path.join("data", "right_answers.json")) as f:
             self.answers = json.load(f)
-        markers = []
-        for i in range(0, 5):
-            markers.append('RED')
-        for i in range(0, 5):
-            markers.append('GREEN')
-        for i in range(0, 5):
-            self.desk_matrix.append(markers)
-        markers = []
-        for i in range(0, 5):
-            markers.append('BLUE')
-        for i in range(0, 5):
-            markers.append('YELLOW')
-        for i in range(0, 5):
-            self.desk_matrix.append(markers)
+        # Генерация стартовой матрицы поля
+        if len(TEAM_COLORS) == 4:
+            self.desk_matrix = list([list([MARKERS[TEAM_COLORS[(j // (DESK_SIZE // 2)) +
+                                                               (2 if i >= DESK_SIZE/2 else 0)]]
+                                           for j in range(0, DESK_SIZE)]) for i in range(0, DESK_SIZE)])
+        else:
+            raise ValueError('Команд доложно быть 4')
 
     def _send_all(self, json, exclude=None):
         for team in self.teams:
@@ -74,7 +59,6 @@ class Game:
                 self.points[self.teams.index(team)] = self.question['cost']
             else:
                 team.write_message(json.dumps({'key': 'points', 'points': 0}))
-
 
     @property
     def state(self):
