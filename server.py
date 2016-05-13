@@ -9,8 +9,6 @@ import time
 from settings import *
 
 
-
-
 class Game:
     def __init__(self):
         self._state = REGISTER  # статус хода
@@ -56,9 +54,18 @@ class Game:
         if message['key'] == 'answer_checked':
             if self.check_asnwer(message['checkedAnswer']):
                 team.write_message(json.dumps({'key': 'points', 'points': self.question['cost']}))
-                self.points[self.teams.index(team)] = self.question['cost']
+                self.points[self.teams.index(team)] = int(self.question['cost'])
+                team.write_message(json.dumps({'key': 'matrix', 'matrix': self.desk_matrix}))
             else:
                 team.write_message(json.dumps({'key': 'points', 'points': 0}))
+                team.write_message(json.dumps({'key': 'matrix', 'matrix': self.desk_matrix}))
+        if message['key'] == 'mark':
+            if self.points[self.teams.index(team)]:
+                self.desk_matrix[int(message['i'])][int(message['j'])] = MARKERS[TEAM_COLORS[self.teams.index(team)]]
+                self._send_all(json.dumps({'key': 'mark', 'i': int(message['i']), 'j': int(message['j']),
+                                           'image': MARKERS[TEAM_COLORS[self.teams.index(team)]]}))
+                self.points[self.teams.index(team)] -= 1
+                team.write_message(json.dumps({'key': 'points', 'points': self.points[self.teams.index(team)]}))
 
     @property
     def state(self):

@@ -1,9 +1,6 @@
 var log;
 var uri = "/websocket";
-var points = 0;
 var team;
-var questData;
-var state = 0;
 var desk;
 var quests;
 var ws;
@@ -33,7 +30,6 @@ function Form(selector){
 function Desk(selector) {
     var self = this;
     var $obj = $(selector);
-    var images;
     this.init = function(data) {
         var onclick1 = "desk.onClick(id)";
         for (var i = 0; i < 10; i++) {
@@ -48,12 +44,10 @@ function Desk(selector) {
             }
             $obj.append(tr)
         }
+        $obj.show();
     };
     this.onClick = function (id) {
-        var td = $('#' + id);
-        var img = $('<img />', {src: yellow_src});
-        td.empty();
-        td.append(img);
+        ws.send({'key': 'mark', 'i': id[0], 'j': id[2]})
     };
 
     this.hide = function(){
@@ -64,8 +58,13 @@ function Desk(selector) {
         $obj.show();
     };
 
-    this.change = function() {};
-};
+    this.change = function(data) {
+        var $mark = $('#'+data.i+'_'+data.j);
+        $mark.empty();
+        var img = $('<img />', {src: data.image});
+        $mark.append(img);
+    };
+}
 
 function QuestChoice(selector) {
     var self = this;
