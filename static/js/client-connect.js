@@ -31,6 +31,8 @@ function Desk(selector) {
     var self = this;
     var $obj = $(selector);
     this.init = function(data) {
+        self.show();
+        $obj.empty();
         var onclick1 = "desk.onClick(id)";
         for (var i = 0; i < 10; i++) {
             var tr = $(document.createElement('tr'));
@@ -97,7 +99,9 @@ function QuestChoice(selector) {
     };
     this.unblock = function(){
         // Разблокирует кнопки выбора вопроса
+        desk.hide();
         $table.find("button").prop( "disabled", false );
+        self.show();
     };
 
     this.show = function(){
@@ -175,6 +179,27 @@ function Points(selector) {
     };
 }
 
+function Team(selector) {
+    var self = this;
+    var $obj = $(selector);
+    this.init = function(data) {
+        $obj.append('<label>'+'Ваша команда: '+data.color+'</label>')
+    }
+}
+
+function Marks(selector) {
+    var self = this;
+    var $obj = $(selector);
+    this.refr = function(data) {
+        $obj.empty();
+        for (var i = 0; i < 4; i++) {
+            var line = '<label>'+data.teams[i]+': '+data.marks[data.teams[i]]+'<label>';
+            $obj.append(line);
+            $obj.append('<br/>');
+        }
+    }
+}
+
 $(function () {
     log = function (data) {
         $("div#terminal").prepend("</br>" + data);
@@ -204,6 +229,12 @@ $(function () {
     desk.hide();
     ws.handleEvents(desk.init, 'matrix');
     ws.handleEvents(desk.change, 'mark');
+
+    var team = new Team('#team');
+    ws.handleEvents(team.init, 'color');
+
+    var marks = new Marks('#marks');
+    ws.handleEvents(marks.refr, 'marks');
 
 });
 

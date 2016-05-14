@@ -14,11 +14,13 @@ class Game:
         self._state = REGISTER  # статус хода
         self._turn = 0  # индекс команды, чей сейчас ход
         self.teams = []  # список команд
+        self._checked_teams = 0
         self.points = [0, 0, 0, 0]
         self.do = {
             REGISTER: lambda: None,
             SELECT_QUESTION: self.select_question,
-            SELECT_ANSWER: self.select_answer
+            SELECT_ANSWER: self.select_answer,
+            SET_MARKERS: self.send_matrix
         }
         self.questions = None
         self.answers = None
@@ -50,22 +52,11 @@ class Game:
         # TODO: Данный метод реализован неверно, т.к. не соответствует нашей выбранной концепции смены state и turn...
         if message["key"] == "quest_sel":
             self._send_all(json.dumps({'key': 'question', 'question': self.chosen_quest(int(message['id']))}))
-            self.select_answer()
+            self.state += 1
         if message['key'] == 'answer_checked':
-            if self.check_asnwer(message['checkedAnswer']):
-                team.write_message(json.dumps({'key': 'points', 'points': self.question['cost']}))
-                self.points[self.teams.index(team)] = int(self.question['cost'])
-                team.write_message(json.dumps({'key': 'matrix', 'matrix': self.desk_matrix}))
-            else:
-                team.write_message(json.dumps({'key': 'points', 'points': 0}))
-                team.write_message(json.dumps({'key': 'matrix', 'matrix': self.desk_matrix}))
+            self.answering(message, team)
         if message['key'] == 'mark':
-            if self.points[self.teams.index(team)]:
-                self.desk_matrix[int(message['i'])][int(message['j'])] = MARKERS[TEAM_COLORS[self.teams.index(team)]]
-                self._send_all(json.dumps({'key': 'mark', 'i': int(message['i']), 'j': int(message['j']),
-                                           'image': MARKERS[TEAM_COLORS[self.teams.index(team)]]}))
-                self.points[self.teams.index(team)] -= 1
-                team.write_message(json.dumps({'key': 'points', 'points': self.points[self.teams.index(team)]}))
+            self.mark(message, team)
 
     @property
     def state(self):
@@ -88,6 +79,8 @@ class Game:
     @turn.setter
     def turn(self, value):
         self._turn = value
+        if value == len(self.teams):
+            self._turn = 0
 
     def connect(self, team):
         """
@@ -98,6 +91,8 @@ class Game:
             raise ValueError("Game in progress, registration is closed")
 
         self.teams.append(team)
+        # Отправка цвета команды
+        team.write_message({'key': 'color', 'color': TEAM_COLORS[self.teams.index(team)]})
         if len(TEAM_COLORS[:2]) == len(self.teams):
             self.state += 1
             self._send_all({"key": "register", "register_closed": True})
@@ -117,9 +112,9 @@ class Game:
     def select_question(self):
         print(".select_question()")
         # Всем командам отсылаем вопросы
-        self._send_all({"key": "questions", "questions": self.questions})
+        self.teams[self.turn].write_message({"key": "questions", "questions": self.questions})
         # Текущей команде(чей сейчас ход) отсылаем сообщение "Выберите вопрос"
-        self.teams[self._turn].write_message({"key": "quest_sel"})
+        self.teams[self.turn].write_message({"key": "quest_sel"})
 
     def select_answer(self):
         for second in range(1, self.time_end+1)[::-1]:
@@ -137,10 +132,53 @@ class Game:
                         self.question = quest
                         return quest
 
-    def check_asnwer(self, answer):
+    def check_answer(self, answer):
         for quest in self.answers:
             if quest['id'] == self.question['id']:
                 return answer == quest['answer']
+
+    @property
+    def marks(self):
+        points = {'RED': 0, 'GREEN': 0, 'BLUE': 0, 'YELLOW': 0}
+        for line in self.desk_matrix:
+            for color in MARKERS.keys():
+                points[color] += line.count(MARKERS[color])
+        return points
+
+    def mark(self, message, team):
+        self._send_all(json.dumps({'key': 'marks', 'marks': self.marks, 'teams': TEAM_COLORS[:]}))
+        if self.points[self.teams.index(team)] and (self.desk_matrix[int(message['i'])][int(message['j'])] !=
+                                                        MARKERS[TEAM_COLORS[self.teams.index(team)]]):
+            self.desk_matrix[int(message['i'])][int(message['j'])] = MARKERS[TEAM_COLORS[self.teams.index(team)]]
+            self._send_all(json.dumps({'key': 'mark', 'i': int(message['i']), 'j': int(message['j']),
+                                       'image': MARKERS[TEAM_COLORS[self.teams.index(team)]]}))
+            self.points[self.teams.index(team)] -= 1
+            team.write_message(json.dumps({'key': 'points', 'points': self.points[self.teams.index(team)]}))
+        if self.points == [0, 0, 0, 0]:
+            self.state += 1
+
+    @property
+    def checked_teams(self):
+        return self._checked_teams
+
+    @checked_teams.setter
+    def checked_teams(self, value):
+        self._checked_teams = value
+        if value == len(self.teams):
+            self._checked_teams = 0
+
+    def answering(self, message, team):
+        self.checked_teams += 1
+        if self.check_answer(message['checkedAnswer']):
+            team.write_message(json.dumps({'key': 'points', 'points': self.question['cost']}))
+            self.points[self.teams.index(team)] = int(self.question['cost'])
+        else:
+            team.write_message(json.dumps({'key': 'points', 'points': 0}))
+        if not self.checked_teams:
+            self.state += 1
+
+    def send_matrix(self):
+        self._send_all(json.dumps({'key': 'matrix', 'matrix': self.desk_matrix}))
 
 
 class Team:
