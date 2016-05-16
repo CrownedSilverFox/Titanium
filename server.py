@@ -7,6 +7,7 @@ import os
 import json
 import time
 from settings import *
+import sys
 
 
 class Game:
@@ -49,7 +50,6 @@ class Game:
             team.write_message(json)
 
     def received_message(self, team, message):
-        # TODO: Данный метод реализован неверно, т.к. не соответствует нашей выбранной концепции смены state и turn...
         if message["key"] == "quest_sel":
             self._send_all(json.dumps({'key': 'question', 'question': self.chosen_quest(int(message['id']))}))
             self.state += 1
@@ -110,7 +110,15 @@ class Game:
             self._send_all({"key": "register", "connected_teams": [team.color for team in self.teams]})
 
     def select_question(self):
-        print(".select_question()")
+        questions = self.questions.copy()
+        if self.questions:
+            for key in self.questions.keys():
+                if not questions[key]:
+                    questions.pop(key)
+        self.questions = questions
+        if not self.questions:
+            self.game_end()
+            return
         # Всем командам отсылаем вопросы
         self.teams[self.turn].write_message({"key": "questions", "questions": self.questions})
         # Текущей команде(чей сейчас ход) отсылаем сообщение "Выберите вопрос"
@@ -179,6 +187,22 @@ class Game:
 
     def send_matrix(self):
         self._send_all(json.dumps({'key': 'matrix', 'matrix': self.desk_matrix}))
+
+    def game_end(self):
+        marks = self.marks
+        winner = TEAM_COLORS[0]
+        for team in marks.keys():
+            if marks[winner] < marks[team]:
+                winner = team
+        self._send_all(json.dumps({'key': 'end', 'marks': self.marks,
+                                   'teams': TEAM_COLORS[:], 'winner': winner}))
+        # TODO: реализовать создание новой игры после завершения старой и подключении новых игроков
+        time.sleep(5)
+        self.reload()
+
+    def reload(self):
+        self.load_data()
+        self.__init__()
 
 
 class Team:

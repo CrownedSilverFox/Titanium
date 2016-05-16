@@ -17,7 +17,7 @@ function WS() {
         websock.onmessage = function (evt) {
             //TODO: перехватывать и обрабатывать полученные не JSON данные
             var data = JSON.parse(evt.data);
-            log("message received: " + JSON.stringify(data));
+            //log("message received: " + JSON.stringify(data));
             if ((data["key"]) && (isFunction(self.handlers[data["key"]]))) {
                 self.handlers[data["key"]](data);
             }

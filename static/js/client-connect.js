@@ -33,6 +33,9 @@ function Desk(selector) {
     this.init = function(data) {
         self.show();
         $obj.empty();
+        if ((document.getElementById('points').textContent) && (document.getElementById('points').textContent[11] == '0')){
+            self.onClick('0 0');
+        }
         var onclick1 = "desk.onClick(id)";
         for (var i = 0; i < 10; i++) {
             var tr = $(document.createElement('tr'));
@@ -200,6 +203,23 @@ function Marks(selector) {
     }
 }
 
+function End(selector) {
+    var $obj = $(selector);
+    var self = this;
+    this.init = function(data) {
+        $('div').hide();
+        $obj.show();
+        $obj.append('<label>ПОБЕДИТЕЛЬ: '+data.winner+'</label>');
+        $obj.append('<br/>');
+        $obj.append('<br/>');
+        for (var i = 0; i < 4; i++) {
+            var line = '<label>'+data.teams[i]+': '+data.marks[data.teams[i]]+'<label>';
+            $obj.append(line);
+            $obj.append('<br/>');
+        }
+    };
+}
+
 $(function () {
     log = function (data) {
         $("div#terminal").prepend("</br>" + data);
@@ -236,5 +256,7 @@ $(function () {
     var marks = new Marks('#marks');
     ws.handleEvents(marks.refr, 'marks');
 
+    var end = new End('#end');
+    ws.handleEvents(end.init, 'end')
 });
 
