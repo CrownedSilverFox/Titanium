@@ -209,11 +209,12 @@ function End(selector) {
     this.init = function(data) {
         $('div').hide();
         $obj.show();
-        $obj.append('<label>ПОБЕДИТЕЛЬ: '+data.winner+'</label>');
+        $obj.append($('<label>ПОБЕДИТЕЛЬ: '+data.winner+'</label>').css({backgroundColor: data.winner.toLowerCase()}));
         $obj.append('<br/>');
         $obj.append('<br/>');
         for (var i = 0; i < 4; i++) {
-            var line = '<label>'+data.teams[i]+': '+data.marks[data.teams[i]]+'<label>';
+            var line = $('<label>'+data.teams[i]+': '+data.marks[data.teams[i]]+'<label>');
+            line.css({backgroundColor: data.teams[i].toLowerCase()});
             $obj.append(line);
             $obj.append('<br/>');
         }

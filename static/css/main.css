@@ -58,3 +58,24 @@ table {
     align-self: center;
     align-items: center;
 }
+body{
+    background-image: url("../images/Natural-Paper-Background.jpg");
+}
+#timer{
+    align-content: center;
+    align-self: center;
+    align-items: center;
+}
+#answer_choice{
+    align-content: center;
+    align-self: center;
+    align-items: center;
+}
+#markscon{
+    align-content: center;
+    align-self: center;
+    align-items: center;
+}
+#timer label{
+    background-color: orange;
+}

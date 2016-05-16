@@ -25,14 +25,14 @@ function WS() {
         };
 
         websock.onclose = function (evt) {
-            log("***Connection Closed***");
+            log("***Подключение разорвано***");
             connect_form.$port.css("background", "#ff0000");
             connect_form.$host.css("background", "#ff0000");
             connect_form.show();
         };
 
         websock.onopen = function (evt) {
-            log("***Connection Open***");
+            //log("***Connection Open***");
             connect_form.hide();
         };
     };

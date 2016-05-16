@@ -50,6 +50,8 @@ class Game:
             team.write_message(json)
 
     def received_message(self, team, message):
+        if not self.teams:
+            return
         if message["key"] == "quest_sel":
             self._send_all(json.dumps({'key': 'question', 'question': self.chosen_quest(int(message['id']))}))
             self.state += 1
@@ -120,7 +122,7 @@ class Game:
             self.game_end()
             return
         # Всем командам отсылаем вопросы
-        self.teams[self.turn].write_message({"key": "questions", "questions": self.questions})
+        self._send_all({"key": "questions", "questions": self.questions})
         # Текущей команде(чей сейчас ход) отсылаем сообщение "Выберите вопрос"
         self.teams[self.turn].write_message({"key": "quest_sel"})
 
@@ -162,7 +164,7 @@ class Game:
                                        'image': MARKERS[TEAM_COLORS[self.teams.index(team)]]}))
             self.points[self.teams.index(team)] -= 1
             team.write_message(json.dumps({'key': 'points', 'points': self.points[self.teams.index(team)]}))
-        if self.points == [0, 0, 0, 0]:
+        if (self.points == [0, 0, 0, 0]) and (self.state == 3):
             self.state += 1
 
     @property
@@ -173,7 +175,7 @@ class Game:
     def checked_teams(self, value):
         self._checked_teams = value
         if value == len(self.teams):
-            self._checked_teams = 0
+            self._checked_teams = -1
 
     def answering(self, message, team):
         self.checked_teams += 1
@@ -182,10 +184,12 @@ class Game:
             self.points[self.teams.index(team)] = int(self.question['cost'])
         else:
             team.write_message(json.dumps({'key': 'points', 'points': 0}))
-        if not self.checked_teams:
+        if self.checked_teams == -1:
+            self.checked_teams = 0
             self.state += 1
 
     def send_matrix(self):
+        self._send_all(json.dumps({'key': 'marks', 'marks': self.marks, 'teams': TEAM_COLORS[:]}))
         self._send_all(json.dumps({'key': 'matrix', 'matrix': self.desk_matrix}))
 
     def game_end(self):
@@ -196,7 +200,7 @@ class Game:
                 winner = team
         self._send_all(json.dumps({'key': 'end', 'marks': self.marks,
                                    'teams': TEAM_COLORS[:], 'winner': winner}))
-        # TODO: реализовать создание новой игры после завершения старой и подключении новых игроков
+        # Случайно реализовал возможность сыграть повторно.
         time.sleep(5)
         self.reload()
 
@@ -242,7 +246,8 @@ class WSHandler(tornado.websocket.WebSocketHandler, Team):
 
     def on_close(self):
         print("close connection", self)
-        self.application.game.disconnect(self)
+        if self.application.game.teams:
+            self.application.game.disconnect(self)
         self.on_delete()
 
     def check_origin(self, origin):
