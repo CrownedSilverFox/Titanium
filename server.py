@@ -3,11 +3,9 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.web
 import socket
-import os
 import json
 import time
 from settings import *
-import sys
 
 
 class Game:
@@ -110,6 +108,9 @@ class Game:
         self.teams.remove(team)
         if self._state == REGISTER:
             self._send_all({"key": "register", "connected_teams": [team.color for team in self.teams]})
+        if not self.teams:
+            self.state = REGISTER
+            self.reload()
 
     def select_question(self):
         questions = self.questions.copy()
@@ -156,7 +157,6 @@ class Game:
         return points
 
     def mark(self, message, team):
-        self._send_all(json.dumps({'key': 'marks', 'marks': self.marks, 'teams': TEAM_COLORS[:]}))
         if self.points[self.teams.index(team)] and (self.desk_matrix[int(message['i'])][int(message['j'])] !=
                                                         MARKERS[TEAM_COLORS[self.teams.index(team)]]):
             self.desk_matrix[int(message['i'])][int(message['j'])] = MARKERS[TEAM_COLORS[self.teams.index(team)]]
@@ -164,6 +164,7 @@ class Game:
                                        'image': MARKERS[TEAM_COLORS[self.teams.index(team)]]}))
             self.points[self.teams.index(team)] -= 1
             team.write_message(json.dumps({'key': 'points', 'points': self.points[self.teams.index(team)]}))
+        self._send_all(json.dumps({'key': 'marks', 'marks': self.marks, 'teams': TEAM_COLORS[:]}))
         if (self.points == [0, 0, 0, 0]) and (self.state == 3):
             self.state += 1
 

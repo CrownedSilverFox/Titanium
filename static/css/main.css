@@ -65,6 +65,7 @@ body{
     align-content: center;
     align-self: center;
     align-items: center;
+    font-size: large;
 }
 #answer_choice{
     align-content: center;
@@ -78,4 +79,29 @@ body{
 }
 #timer label{
     background-color: orange;
+}
+#points {
+    font-size: x-large;
+}
+#state {
+    font-size: large;
+}
+#questions button {
+    display: inline-block;
+    border: none;
+}
+#questions td {
+    padding: 0;
+}
+#questions tr {
+    padding: 0;
+}
+#questions {
+    padding: 0;
+}
+#marks {
+    color: black;
+}
+#team {
+    color: black;
 }

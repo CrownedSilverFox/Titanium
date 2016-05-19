@@ -1,10 +1,10 @@
 var log;
 var uri = "/websocket";
-var team;
 var desk;
 var quests;
 var ws;
 var timer;
+var state;
 
 function Form(selector){
     var self = this;
@@ -50,6 +50,8 @@ function Desk(selector) {
             $obj.append(tr)
         }
         $obj.show();
+        state.refr('Распределите очки');
+        quests.hide();
     };
     this.onClick = function (id) {
         ws.send({'key': 'mark', 'i': id[0], 'j': id[2]})
@@ -92,8 +94,7 @@ function QuestChoice(selector) {
             }
             $table.append(tr)
         }
-        // Блокирует кнопки выбора вопроса
-        $table.find("button").attr("disabled", "disabled");
+        self.block();
     };
     this.onClick = function(id) {
         var data = {'key': 'quest_sel', 'id': id};
@@ -102,9 +103,10 @@ function QuestChoice(selector) {
     };
     this.unblock = function(){
         // Разблокирует кнопки выбора вопроса
-        desk.hide();
         $table.find("button").prop( "disabled", false );
+        $table.find("button").css({backgroundColor: "#4CAF50"});
         self.show();
+        state.refr('Выберите вопрос');
     };
 
     this.show = function(){
@@ -112,6 +114,11 @@ function QuestChoice(selector) {
     };
     this.hide = function() {
         $table.hide();
+    };
+    this.block = function () {
+        // Блокирует кнопки выбора вопроса
+        $table.find("button").attr("disabled", "disabled");
+        $table.find("button").css({backgroundColor: "#e7e7e7"});
     }
 }
 
@@ -128,6 +135,7 @@ function AnswerChoice(selector) {
             $obj.append(line);
         }
         quests.hide();
+        desk.hide();
         self.show();
     };
     this.send_answer = function(){
@@ -141,6 +149,7 @@ function AnswerChoice(selector) {
         ws.send(answer);
         self.hide();
         timer.hide();
+        quests.show();
     };
     this.hide = function () {
         $obj.hide();
@@ -157,6 +166,7 @@ function Timer(selector) {
         $obj.empty();
         $obj.append('<label>Времени осталось: '+data.time+'</label>');
         self.show();
+        state.refr('Выберите ответ на вопрос');
     };
     this.hide = function () {
         $obj.hide()
@@ -172,6 +182,8 @@ function Points(selector) {
     this.pointsChanged = function(data) {
         $obj.empty();
         $obj.append('<label>Ваши очки: '+data.points+'</label>');
+        $obj.append('<br/>');
+        $obj.append('<label>Пожалуйста, распределите их ВСЕ.</label>');
         self.show();
     };
     this.hide = function () {
@@ -186,18 +198,20 @@ function Team(selector) {
     var self = this;
     var $obj = $(selector);
     this.init = function(data) {
-        $obj.append('<label>'+'Ваша команда: '+data.color+'</label>')
+        $obj.append($('<label>'+'Ваша команда: '+data.color+'</label>').css({backgroundColor: data.color.toLowerCase()}))
     }
 }
 
 function Marks(selector) {
     var self = this;
     var $obj = $(selector);
+    $('#markscon').hide();
     this.refr = function(data) {
+        $('#markscon').show();
         $obj.empty();
         for (var i = 0; i < 4; i++) {
             var line = '<label>'+data.teams[i]+': '+data.marks[data.teams[i]]+'<label>';
-            $obj.append(line);
+            $obj.append($(line).css({backgroundColor: data.teams[i].toLowerCase()}));
             $obj.append('<br/>');
         }
     }
@@ -219,6 +233,15 @@ function End(selector) {
             $obj.append('<br/>');
         }
     };
+}
+
+function State(selector) {
+    var $obj = $(selector);
+    var self = this;
+    this.refr = function (text) {
+        $obj.empty();
+        $obj.append($('<label>'+text+'</label>').css({backgroundColor: '#1b6d85'}));
+    }
 }
 
 $(function () {
@@ -258,6 +281,8 @@ $(function () {
     ws.handleEvents(marks.refr, 'marks');
 
     var end = new End('#end');
-    ws.handleEvents(end.init, 'end')
+    ws.handleEvents(end.init, 'end');
+
+    state = new State('#state');
 });
 
