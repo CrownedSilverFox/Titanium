@@ -50,7 +50,7 @@ function Desk(selector) {
             $obj.append(tr)
         }
         $obj.show();
-        state.refr('Распределите очки');
+        state.refr('Распределите очки/Ожидайте остальных игроков');
         quests.hide();
     };
     this.onClick = function (id) {
