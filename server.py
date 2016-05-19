@@ -24,7 +24,7 @@ class Game:
         self.questions = None
         self.answers = None
         self.question = None
-        self.time_end = 5
+        self.time_end = 30
         self.desk_matrix = []
         self.load_data()
 

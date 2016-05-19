@@ -211,7 +211,7 @@ function Marks(selector) {
         $obj.empty();
         for (var i = 0; i < 4; i++) {
             var line = '<label>'+data.teams[i]+': '+data.marks[data.teams[i]]+'<label>';
-            $obj.append($(line).css({backgroundColor: data.teams[i].toLowerCase()}));
+            $obj.append($(line));
             $obj.append('<br/>');
         }
     }
@@ -240,7 +240,7 @@ function State(selector) {
     var self = this;
     this.refr = function (text) {
         $obj.empty();
-        $obj.append($('<label>'+text+'</label>').css({backgroundColor: '#1b6d85'}));
+        $obj.append($('<label>'+text+'</label>'));
     }
 }
 

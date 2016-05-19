@@ -27,15 +27,11 @@ td {
 }
 table {
     width: 100%;
-    border-spacing: 0;
+    border-spacing: 1px;
 }
 .board{
     border: 2px solid black;
     float: left;
-}
-.questions{
-    border: 2px solid black;
-    float: right;
 }
 #answer_choice{
     border: 2px solid black;
@@ -71,6 +67,8 @@ body{
     align-content: center;
     align-self: center;
     align-items: center;
+    color: black;
+    font-size: medium;
 }
 #markscon{
     align-content: center;
@@ -85,6 +83,7 @@ body{
 }
 #state {
     font-size: large;
+    color: black;
 }
 #questions button {
     display: inline-block;
