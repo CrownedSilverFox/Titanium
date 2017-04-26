@@ -32,9 +32,11 @@ class Game:
 
     def load_data(self):
         with open(os.path.join("data", "questions.json")) as f:
-            self.questions = json.loads(f, encoding='utf-8')
+            data = f.read().replace('\n', '')
+            self.questions = json.loads(data, encoding='utf-8')
         with open(os.path.join("data", "right_answers.json")) as f:
-            self.answers = json.loads(f, encoding='utf-8')
+            data = f.read().replace('\n', '')
+            self.answers = json.loads(data, encoding='utf-8')
         # Генерация стартовой матрицы поля
         if len(TEAM_COLORS) == 4:
             self.desk_matrix = list([list([MARKERS[TEAM_COLORS[(j // (DESK_SIZE // 2)) +
