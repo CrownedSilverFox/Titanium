@@ -6,7 +6,6 @@ import tornado.web
 import socket
 import json
 import time
-import sys
 from settings import *
 
 
@@ -32,11 +31,9 @@ class Game:
 
     def load_data(self):
         with open(os.path.join("data", "questions.json")) as f:
-            data = f.read().replace('\n', '')
-            self.questions = json.loads(data, encoding='utf-8')
+            self.questions = json.load(f)
         with open(os.path.join("data", "right_answers.json")) as f:
-            data = f.read().replace('\n', '')
-            self.answers = json.loads(data, encoding='utf-8')
+            self.answers = json.load(f)
         # Генерация стартовой матрицы поля
         if len(TEAM_COLORS) == 4:
             self.desk_matrix = list([list([MARKERS[TEAM_COLORS[(j // (DESK_SIZE // 2)) +
