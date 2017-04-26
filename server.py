@@ -6,6 +6,7 @@ import tornado.web
 import socket
 import json
 import time
+import sys
 from settings import *
 
 
@@ -256,6 +257,7 @@ class WSHandler(tornado.websocket.WebSocketHandler, Team):
         return True
 
 
+print(sys.getdefaultencoding())
 application = Application()
 
 if __name__ == "__main__":
