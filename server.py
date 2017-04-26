@@ -32,9 +32,9 @@ class Game:
 
     def load_data(self):
         with open(os.path.join("data", "questions.json")) as f:
-            self.questions = json.load(f)
+            self.questions = json.loads(f, encoding='utf-8')
         with open(os.path.join("data", "right_answers.json")) as f:
-            self.answers = json.load(f)
+            self.answers = json.loads(f, encoding='utf-8')
         # Генерация стартовой матрицы поля
         if len(TEAM_COLORS) == 4:
             self.desk_matrix = list([list([MARKERS[TEAM_COLORS[(j // (DESK_SIZE // 2)) +
@@ -243,7 +243,7 @@ class WSHandler(tornado.websocket.WebSocketHandler, Team):
         print("client connect", self.color)
 
     def on_message(self, message):
-        message = json.loads(message)
+        message = json.loads(message, encoding='utf-8')
         print("WSHandler Received message: {}".format(message))
         self.application.game.received_message(self, message)
 
@@ -257,7 +257,6 @@ class WSHandler(tornado.websocket.WebSocketHandler, Team):
         return True
 
 
-print(sys.getdefaultencoding())
 application = Application()
 
 if __name__ == "__main__":
